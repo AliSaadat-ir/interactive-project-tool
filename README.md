@@ -53,7 +53,7 @@ This tool works perfectly with all major JavaScript frameworks and libraries:
 ### Quick Install (Recommended)
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/interactive-project-tool.git
+git clone https://github.com/AliSaadat/interactive-project-tool.git
 cd interactive-project-tool
 
 # Make executable and run setup
@@ -280,8 +280,8 @@ npm bin -g
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/interactive-project-tool/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/interactive-project-tool/discussions)
+- **Issues**: [GitHub Issues](https://github.com/AliSaadat/interactive-project-tool/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/AliSaadat/interactive-project-tool/discussions)
 
 ## 🆕 What's New in v1.3
 
