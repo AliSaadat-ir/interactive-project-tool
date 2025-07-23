@@ -79,6 +79,21 @@ npm install -g .
 | Enter | Confirm |
 | Ctrl+C | Exit |
 
+## 🖥️ Command Line Options
+
+```bash
+# Show help
+project-tool --help
+project-tool -h
+
+# Show version
+project-tool --version
+project-tool -v
+
+# Interactive mode (default)
+project-tool
+```
+
 ## 📁 File Structure
 
 After setup, you'll have:

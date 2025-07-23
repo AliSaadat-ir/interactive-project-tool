@@ -2,32 +2,36 @@
 
 All notable changes to the Interactive Project Export/Import Tool will be documented in this file.
 
-## [1.3.0] - 2024-01-17
+## [1.3.0] - 2025-07-24
 
 ### Added
 - **Create Structure from Tree**: New feature to create folder/file structure from a tree diagram
   - Paste any tree structure and automatically create all folders and empty files
   - Supports complex nested structures
   - Perfect for quickly setting up project scaffolding
+- **Command Line Options**: Added --help and --version flags for easier testing and CI/CD
 - **Smart Export File Filtering**: Import now only shows .txt files containing "export" in the name
 - **PowerShell Compatibility**: Full compatibility with Windows PowerShell terminal
   - Fixed input issues with folder name entry
   - Fixed paste duplication issues
   - Improved readline interface handling
+- **GitHub Actions Support**: Better integration with CI/CD pipelines
 
 ### Fixed
 - **Folder Creation Bug**: Fixed issue where creating new folders would exit the terminal
 - **Parent Directory Navigation**: Fixed navigation with ".." in import file selection
 - **Tree Parsing**: Improved tree structure parsing to handle PowerShell paste issues
 - **Input Handling**: Completely rewrote input handling for better cross-platform compatibility
+- **Windows Test Commands**: Fixed PowerShell commands in GitHub Actions workflows
 
 ### Changed
 - Import file browser now filters to show only relevant export files
 - Tree structure always included in exports, even for flat projects
 - Improved error handling for file system operations
 - Better visual feedback during all operations
+- Minimum Node.js version requirement updated to 14.0.0
 
-## [1.2.0] - 2024-01-16
+## [1.2.0] - 2025-07-23
 
 ### Added
 - **Enhanced Import Process**: Complete redesign of the import functionality
@@ -44,7 +48,7 @@ All notable changes to the Interactive Project Export/Import Tool will be docume
 - Import process now has 3 clear steps: file selection, destination selection, and confirmation
 - Default folder name "recovered" is now suggested but not forced
 
-## [1.1.0] - 2024-01-15
+## [1.1.0] - 2025-07-23
 
 ### Added
 - **Gitignore Support**: When exporting a project that contains a `.gitignore` file, the tool now asks whether you want to use its patterns for filtering files
@@ -59,7 +63,7 @@ All notable changes to the Interactive Project Export/Import Tool will be docume
 - Updated export metadata to include gitignore usage status
 - Improved menu redraw logic for smoother navigation
 
-## [1.0.0] - 2024-01-10
+## [1.0.0] - 2025-07-23
 
 ### Initial Release
 - Interactive CLI with arrow key navigation

@@ -34,45 +34,40 @@ jobs:
       if: runner.os != 'Windows'
       run: chmod +x project-tool.js
     
-    - name: Test help command
-      run: node project-tool.js --help || true
-    
     - name: Check script syntax
       run: node -c project-tool.js
     
-    - name: Create test project
+    - name: Test help command
+      run: node project-tool.js --help
+    
+    - name: Test version command
+      run: node project-tool.js --version
+    
+    - name: Create test project structure
       run: |
-        mkdir -p test-project/src
+        mkdir -p test-project/src/components
         echo "console.log('test');" > test-project/src/index.js
-        echo '{"name":"test"}' > test-project/package.json
+        echo '{"name":"test-project","version":"1.0.0"}' > test-project/package.json
+        echo "# Test Project" > test-project/README.md
     
-    - name: Test script loads without errors
-      run: |
-        echo "Testing script loading..."
-        timeout 5 node project-tool.js < /dev/null || true
+    - name: List test project (Unix)
       if: runner.os != 'Windows'
-    
-    - name: Test script loads without errors (Windows)
       run: |
-        echo "Testing script loading..."
-        $process = Start-Process -FilePath "node" -ArgumentList "project-tool.js" -PassThru -RedirectStandardInput "NUL"
-        Start-Sleep -Seconds 2
-        if (!$process.HasExited) {
-          $process.Kill()
-        }
+        echo "Test project structure:"
+        ls -la test-project/
+        ls -la test-project/src/
+    
+    - name: List test project (Windows)
       if: runner.os == 'Windows'
-      shell: pwsh
-    
-    - name: Verify script runs
       run: |
-        echo "✅ Script syntax check passed"
-        echo "✅ Script can be executed"
-        ls -la
-      if: runner.os != 'Windows'
+        echo "Test project structure:"
+        dir test-project
+        dir test-project\src
     
-    - name: Verify script runs (Windows)
+    - name: Summary
       run: |
-        echo "✅ Script syntax check passed"
-        echo "✅ Script can be executed"
-        dir
-      if: runner.os == 'Windows'
+        echo "✅ Node.js ${{ matrix.node-version }} on ${{ matrix.os }}"
+        echo "✅ Script syntax valid"
+        echo "✅ Help command works"
+        echo "✅ Version command works"
+        echo "✅ Test completed successfully!"

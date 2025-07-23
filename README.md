@@ -80,9 +80,16 @@ project-tool
 
 ### Basic Usage
 ```bash
+# Interactive mode (default)
 project-tool
 # or
 ./project-tool.js
+
+# Show help
+project-tool --help
+
+# Show version
+project-tool --version
 ```
 
 ### Export Process

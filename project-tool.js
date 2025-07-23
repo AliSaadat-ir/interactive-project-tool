@@ -1044,6 +1044,31 @@ async function mainMenu() {
 
 // Start the application
 async function main() {
+  // Check for command line arguments
+  const args = process.argv.slice(2);
+  
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log('Interactive Project Export/Import Tool v1.3.0');
+    console.log('');
+    console.log('Usage: project-tool [options]');
+    console.log('');
+    console.log('Options:');
+    console.log('  --help, -h     Show this help message');
+    console.log('  --version, -v  Show version information');
+    console.log('');
+    console.log('Interactive menu options:');
+    console.log('  1. Export Project - Export your project to a single file');
+    console.log('  2. Import Project - Import a project from an export file');
+    console.log('  3. Create Structure from Tree - Create folder structure from a tree diagram');
+    console.log('  4. Exit');
+    process.exit(0);
+  }
+  
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log('1.3.0');
+    process.exit(0);
+  }
+  
   try {
     await mainMenu();
   } catch (error) {
