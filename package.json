@@ -1,0 +1,31 @@
+{
+  "name": "interactive-project-tool",
+  "version": "1.1.0",
+  "description": "Interactive CLI tool for exporting and importing project files with .gitignore support",
+  "main": "project-tool.js",
+  "bin": {
+    "project-tool": "./project-tool.js"
+  },
+  "scripts": {
+    "start": "node project-tool.js",
+    "install-global": "npm install -g .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "project",
+    "export",
+    "import",
+    "tool",
+    "interactive",
+    "gitignore"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "preferGlobal": true
+}
