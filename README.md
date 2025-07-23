@@ -9,6 +9,7 @@ If you're working with **Claude AI Opus 4** (which isn't yet available through A
 - Share it with Claude AI in the chat interface
 - Get AI assistance on your complete codebase
 - Import Claude's suggestions back into your project structure
+- **NEW**: Create project structures from tree diagrams
 
 ## 🚀 Supported JavaScript Frameworks
 
@@ -38,11 +39,14 @@ This tool works perfectly with all major JavaScript frameworks and libraries:
 - 🎯 Interactive menu with arrow key navigation
 - 📤 Export entire projects to a single text file
 - 📥 Import projects with advanced directory selection
+- 🌳 **NEW**: Create folder/file structure from tree diagrams
 - 📁 Visual file/directory browser for both export and import
 - 🎨 Colorful terminal interface
 - 📋 Optional .gitignore support during export
 - 🆕 Create new folders during import
+- 🔍 Smart filtering for export files during import
 - 🚀 No external dependencies (uses only Node.js built-ins)
+- 💻 Full PowerShell compatibility
 
 ## 📦 Installation
 
@@ -89,9 +93,35 @@ project-tool
 
 ### Import Process
 1. Select **"Import Project"**
-2. Choose your export file
+2. Choose your export file (only shows .txt files with "export" in name)
 3. Select or create destination directory
 4. Confirm and import
+
+### Create Structure from Tree (NEW!)
+1. Select **"Create Structure from Tree"**
+2. Paste your tree structure
+3. Type `DONE` on a new line
+4. Choose destination directory
+5. Confirm creation
+
+#### Example Tree Input:
+```
+my-project
+├── src/
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   └── Footer.jsx
+│   ├── utils/
+│   │   └── helpers.js
+│   └── index.js
+├── public/
+│   └── index.html
+├── package.json
+└── README.md
+DONE
+```
+
+This will create all folders and empty files ready for your content!
 
 ## 🤖 Using with Claude AI
 
@@ -128,15 +158,6 @@ Output requirements:
 6. Do not mention the prompt itself or metadata; only generate the structured output according to rules.
 ```
 
-<details>
-<summary>📋 Click to copy the prompt</summary>
-
-```
-You are a code-export assistant that produces a single text file summarizing project structure and code contents. Output requirements: 1. The file must contain multiple sections: - For each included file (extensions: .js, .jsx, .ts, .tsx, .css, .scss, .html, .json, .md, .config.js, .babelrc, and dotfiles), insert: // File: relative/path/to/file (then the entire content of that file) - After listing all files, insert: // === Folder Tree === Then a tree diagram using ASCII markers: ├── dir-or-file │   └── nested └── last 2. Excluded: - Directories: node_modules, .git, dist, build, .next, .vscode, and any directory that contains the script - Files: .gitignore, package-lock.json 3. Relative paths are from the project root (one level above script location). 4. The folder tree: - Use ├── for items except the last, └── for the last, indent nested levels with │    or blanks 5. Output must be plain text in one file, no additional commentary or formatting markers. 6. Do not mention the prompt itself or metadata; only generate the structured output according to rules.
-```
-
-</details>
-
 ### 3. In Claude AI Chat:
 1. Upload your `export_[timestamp].txt` file
 2. Paste the prompt above
@@ -159,6 +180,7 @@ project-tool
 - **Learning**: Ask Claude to explain complex parts of your codebase
 - **Documentation**: Generate documentation for your entire project
 - **Migration**: Get help migrating between frameworks or versions
+- **Scaffolding**: Quickly create project structures from examples
 
 ## ⚙️ Configuration
 
@@ -189,6 +211,13 @@ During import, you can:
 - Use existing directories
 - Browse to any location on your system
 
+### Tree Structure Creation
+Perfect for:
+- Setting up project templates
+- Recreating structures from documentation
+- Quick prototyping
+- Teaching/learning project organization
+
 ## 📊 Example Workflow
 
 ```bash
@@ -208,6 +237,12 @@ $ project-tool
 > Select: claude_response.txt
 > Create new folder: my-react-app-updated
 ✅ Imported 156 files to my-react-app-updated/
+
+# 4. Create a new project structure
+$ project-tool
+> Create Structure from Tree
+> [Paste tree and type DONE]
+✅ Created 12 folders and 24 files
 ```
 
 ## 🤝 Contributing
@@ -234,6 +269,11 @@ npm bin -g
 # Add to PATH if needed
 ```
 
+**PowerShell input issues**
+- Make sure you're using the latest version (v1.3+)
+- Type `DONE` on a new line when pasting tree structures
+- Use arrow keys for navigation
+
 **Large projects take too long**
 - The tool automatically skips `node_modules` and build directories
 - Use .gitignore filtering to exclude unnecessary files
@@ -242,6 +282,13 @@ npm bin -g
 
 - **Issues**: [GitHub Issues](https://github.com/yourusername/interactive-project-tool/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/interactive-project-tool/discussions)
+
+## 🆕 What's New in v1.3
+
+- **Create Structure from Tree**: Paste any tree diagram to create folder/file structure
+- **Smart Import Filtering**: Only shows relevant export files
+- **PowerShell Compatibility**: Full support for Windows PowerShell
+- **Better Input Handling**: Improved readline interface for all platforms
 
 ---
 

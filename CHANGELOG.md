@@ -2,6 +2,31 @@
 
 All notable changes to the Interactive Project Export/Import Tool will be documented in this file.
 
+## [1.3.0] - 2024-01-17
+
+### Added
+- **Create Structure from Tree**: New feature to create folder/file structure from a tree diagram
+  - Paste any tree structure and automatically create all folders and empty files
+  - Supports complex nested structures
+  - Perfect for quickly setting up project scaffolding
+- **Smart Export File Filtering**: Import now only shows .txt files containing "export" in the name
+- **PowerShell Compatibility**: Full compatibility with Windows PowerShell terminal
+  - Fixed input issues with folder name entry
+  - Fixed paste duplication issues
+  - Improved readline interface handling
+
+### Fixed
+- **Folder Creation Bug**: Fixed issue where creating new folders would exit the terminal
+- **Parent Directory Navigation**: Fixed navigation with ".." in import file selection
+- **Tree Parsing**: Improved tree structure parsing to handle PowerShell paste issues
+- **Input Handling**: Completely rewrote input handling for better cross-platform compatibility
+
+### Changed
+- Import file browser now filters to show only relevant export files
+- Tree structure always included in exports, even for flat projects
+- Improved error handling for file system operations
+- Better visual feedback during all operations
+
 ## [1.2.0] - 2024-01-16
 
 ### Added

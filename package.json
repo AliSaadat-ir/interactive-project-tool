@@ -1,7 +1,7 @@
 {
   "name": "interactive-project-tool",
-  "version": "1.1.0",
-  "description": "Interactive CLI tool for exporting and importing project files with .gitignore support",
+  "version": "1.3.0",
+  "description": "Interactive CLI tool for exporting and importing project files with tree structure creation support",
   "main": "project-tool.js",
   "bin": {
     "project-tool": "./project-tool.js"
@@ -18,7 +18,10 @@
     "import",
     "tool",
     "interactive",
-    "gitignore"
+    "gitignore",
+    "tree",
+    "structure",
+    "scaffold"
   ],
   "author": "Your Name",
   "license": "MIT",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// === INTERACTIVE PROJECT EXPORT/IMPORT TOOL ===
+// === INTERACTIVE PROJECT EXPORT/IMPORT TOOL v1.3 ===
 // Save this as: project-tool.js
 
 const fs = require('fs');
@@ -23,12 +23,6 @@ const colors = {
   bgGreen: '\x1b[42m'
 };
 
-// Create readline interface for user input
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
 // Clear screen
 function clearScreen() {
   console.clear();
@@ -43,7 +37,7 @@ function print(text, color = 'reset') {
 function printHeader() {
   clearScreen();
   print('╔════════════════════════════════════════╗', 'cyan');
-  print('║   PROJECT EXPORT/IMPORT TOOL v1.2      ║', 'cyan');
+  print('║   PROJECT EXPORT/IMPORT TOOL v1.3      ║', 'cyan');
   print('╚════════════════════════════════════════╝', 'cyan');
   console.log();
 }
@@ -127,43 +121,337 @@ class SimpleMenu {
   }
 }
 
-// File selector
-async function selectFile(directory, message, allowDirectories = false) {
-  const items = fs.readdirSync(directory).filter(item => {
-    const fullPath = path.join(directory, item);
-    const stat = fs.statSync(fullPath);
-    if (allowDirectories) return true;
-    return stat.isFile() && (item.endsWith('.txt') || item.endsWith('.log'));
-  });
+// File selector - improved version
+async function selectFile(directory, message, allowDirectories = false, filterExportFiles = false) {
+  try {
+    const items = fs.readdirSync(directory).filter(item => {
+      const fullPath = path.join(directory, item);
+      const stat = fs.statSync(fullPath);
+      
+      if (stat.isDirectory()) {
+        return allowDirectories;
+      }
+      
+      if (filterExportFiles) {
+        // Only show .txt files that contain "export" in the name
+        return stat.isFile() && item.endsWith('.txt') && item.toLowerCase().includes('export');
+      }
+      
+      return stat.isFile() && (item.endsWith('.txt') || item.endsWith('.log'));
+    });
 
-  if (items.length === 0) {
-    print('No suitable files found in the current directory!', 'red');
+    // If filtering export files and no files found, show directories
+    if (filterExportFiles && items.filter(item => {
+      const stat = fs.statSync(path.join(directory, item));
+      return stat.isFile();
+    }).length === 0) {
+      // Show only directories for navigation
+      const dirs = fs.readdirSync(directory).filter(item => {
+        const stat = fs.statSync(path.join(directory, item));
+        return stat.isDirectory();
+      });
+      
+      const options = dirs.map(item => ({
+        name: `📁 ${item}`,
+        value: item,
+        isDirectory: true
+      }));
+      
+      // Add parent directory option
+      if (directory !== '/' && directory !== path.parse(directory).root) {
+        options.unshift({
+          name: '⬆️  .. (Parent Directory)',
+          value: '..',
+          isDirectory: true
+        });
+      }
+      
+      print('No export files found in this directory. Navigate to find export files.', 'yellow');
+      const menu = new SimpleMenu(message, options);
+      return await menu.show();
+    }
+
+    const options = items.map(item => {
+      const fullPath = path.join(directory, item);
+      const stat = fs.statSync(fullPath);
+      const isDir = stat.isDirectory();
+      const size = isDir ? '' : ` (${(stat.size / 1024).toFixed(1)}KB)`;
+      return {
+        name: `${isDir ? '📁' : '📄'} ${item}${size}`,
+        value: item,
+        isDirectory: isDir
+      };
+    });
+
+    // Add parent directory option if not at root
+    if (directory !== '/' && directory !== path.parse(directory).root) {
+      options.unshift({
+        name: '⬆️  .. (Parent Directory)',
+        value: '..',
+        isDirectory: true
+      });
+    }
+
+    const menu = new SimpleMenu(message, options);
+    return await menu.show();
+  } catch (error) {
+    print(`Error reading directory: ${error.message}`, 'red');
     return null;
   }
+}
 
-  const options = items.map(item => {
-    const fullPath = path.join(directory, item);
-    const stat = fs.statSync(fullPath);
-    const isDir = stat.isDirectory();
-    const size = isDir ? '' : ` (${(stat.size / 1024).toFixed(1)}KB)`;
-    return {
-      name: `${isDir ? '📁' : '📄'} ${item}${size}`,
-      value: item,
-      isDirectory: isDir
-    };
+// Ask question with better PowerShell compatibility
+async function askQuestion(question) {
+  return new Promise((resolve) => {
+    // Ensure stdin is not in raw mode
+    if (process.stdin.setRawMode) {
+      try {
+        process.stdin.setRawMode(false);
+      } catch (e) {}
+    }
+    
+    // Create a new readline interface for this question
+    const rlQuestion = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: true
+    });
+    
+    rlQuestion.question(colors.cyan + question + colors.reset, (answer) => {
+      rlQuestion.close();
+      resolve(answer);
+    });
+  });
+}
+
+// Wait for Enter key
+function waitForEnter() {
+  return new Promise((resolve) => {
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.once('data', () => {
+      process.stdin.setRawMode(false);
+      process.stdin.pause();
+      resolve();
+    });
+  });
+}
+
+// Collect multi-line input for tree structure
+async function collectTreeInput() {
+  return new Promise((resolve) => {
+    print('Enter the folder tree structure:', 'cyan');
+    print('(Paste your tree, then type "DONE" on a new line to finish)', 'dim');
+    print('Example:', 'dim');
+    print('project-name', 'dim');
+    print('├── src/', 'dim');
+    print('│   └── index.js', 'dim');
+    print('└── package.json', 'dim');
+    print('DONE', 'dim');
+    console.log();
+    
+    // Ensure stdin is not in raw mode
+    if (process.stdin.setRawMode) {
+      try {
+        process.stdin.setRawMode(false);
+      } catch (e) {}
+    }
+    
+    const lines = [];
+    const rlTree = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: false // Important for PowerShell
+    });
+    
+    rlTree.on('line', (line) => {
+      if (line.trim().toUpperCase() === 'DONE') {
+        rlTree.close();
+      } else {
+        lines.push(line);
+      }
+    });
+    
+    rlTree.on('close', () => {
+      resolve(lines.join('\n'));
+    });
+  });
+}
+
+// Build folder tree for a directory
+function buildFolderTree(dir, prefix = '', isLast = true) {
+  const items = fs.readdirSync(dir).filter(item => {
+    const IGNORE_DIRS = ['node_modules', '.git', 'dist', 'build', '.next', '.vscode'];
+    const IGNORE_FILES = ['.gitignore', 'package-lock.json', 'yarn.lock'];
+    
+    const fullPath = path.join(dir, item);
+    
+    try {
+      const stat = fs.statSync(fullPath);
+      
+      if (stat.isDirectory()) {
+        return !IGNORE_DIRS.includes(item);
+      } else {
+        return !IGNORE_FILES.includes(item);
+      }
+    } catch (error) {
+      return false;
+    }
   });
 
-  // Add parent directory option if not at root
-  if (directory !== '/') {
-    options.unshift({
-      name: '⬆️  .. (Parent Directory)',
-      value: '..',
-      isDirectory: true
+  let tree = '';
+  
+  if (items.length === 0) {
+    tree += prefix + '└── (empty)\n';
+    return tree;
+  }
+  
+  items.forEach((item, index) => {
+    const fullPath = path.join(dir, item);
+    let stat;
+    try {
+      stat = fs.statSync(fullPath);
+    } catch (error) {
+      return;
+    }
+    
+    const isDirectory = stat.isDirectory();
+    const isLastItem = index === items.length - 1;
+    
+    const linePrefix = prefix + (isLast ? '    ' : '│   ');
+    const marker = isLastItem ? '└── ' : '├── ';
+    
+    tree += prefix + marker + item;
+    if (isDirectory) {
+      tree += '/\n';
+      tree += buildFolderTree(fullPath, linePrefix, isLastItem);
+    } else {
+      tree += '\n';
+    }
+  });
+  
+  return tree;
+}
+
+// Parse tree structure from text - improved version
+function parseTreeStructure(treeText) {
+  const lines = treeText.split('\n').filter(line => line.trim());
+  if (lines.length === 0) return [];
+  
+  const structure = [];
+  const stack = [];
+  
+  lines.forEach((line, index) => {
+    // Remove duplicate lines (PowerShell paste issue)
+    if (index > 0 && line === lines[index - 1]) {
+      return;
+    }
+    
+    // Calculate indent level
+    let indent = 0;
+    let i = 0;
+    
+    // Count leading spaces and tree characters
+    while (i < line.length) {
+      if (line[i] === ' ') {
+        indent++;
+      } else if (line[i] === '│' || line[i] === '├' || line[i] === '└' || line[i] === '─') {
+        // Skip tree drawing characters
+      } else {
+        break;
+      }
+      i++;
+    }
+    
+    // Extract name
+    const name = line.substring(i).trim();
+    if (!name) return;
+    
+    // Determine if it's a directory
+    const isDirectory = name.endsWith('/');
+    const cleanName = isDirectory ? name.slice(0, -1) : name;
+    
+    // Calculate depth based on indent (approximate)
+    const depth = Math.floor(indent / 4);
+    
+    const item = {
+      name: cleanName,
+      type: isDirectory ? 'directory' : 'file',
+      children: []
+    };
+    
+    // First item is root
+    if (structure.length === 0) {
+      item.type = 'directory'; // Root is always a directory
+      structure.push(item);
+      stack.push({ item, depth: 0 });
+    } else {
+      // Find parent based on depth
+      while (stack.length > 1 && stack[stack.length - 1].depth >= depth) {
+        stack.pop();
+      }
+      
+      if (stack.length > 0) {
+        const parent = stack[stack.length - 1].item;
+        parent.children.push(item);
+        stack.push({ item, depth });
+      }
+    }
+  });
+  
+  return structure;
+}
+
+// Count items in tree structure
+function countTreeItems(structure) {
+  let count = 0;
+  
+  function traverse(items) {
+    items.forEach(item => {
+      count++;
+      if (item.children && item.children.length > 0) {
+        traverse(item.children);
+      }
     });
   }
+  
+  traverse(structure);
+  return count;
+}
 
-  const menu = new SimpleMenu(message, options);
-  return await menu.show();
+// Create file/folder structure from parsed tree
+function createStructureFromTree(structure, basePath) {
+  const stats = { folders: 0, files: 0 };
+  
+  function createItems(items, currentPath) {
+    items.forEach(item => {
+      const itemPath = path.join(currentPath, item.name);
+      
+      if (item.type === 'directory') {
+        if (!fs.existsSync(itemPath)) {
+          fs.mkdirSync(itemPath, { recursive: true });
+          stats.folders++;
+        }
+        
+        if (item.children && item.children.length > 0) {
+          createItems(item.children, itemPath);
+        }
+      } else {
+        // Create empty file
+        if (!fs.existsSync(itemPath)) {
+          const dir = path.dirname(itemPath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+          fs.writeFileSync(itemPath, '');
+          stats.files++;
+        }
+      }
+    });
+  }
+  
+  createItems(structure, basePath);
+  return stats;
 }
 
 // Export functionality
@@ -270,23 +558,40 @@ async function importProject() {
 
   // Step 1: Select file to import
   print('Step 1: Select export file to import', 'cyan');
-  const selected = await selectFile(process.cwd(), 'Select export file:', false);
+  print('(Looking for .txt files with "export" in the name)', 'dim');
+  console.log();
   
-  if (!selected || selected.isDirectory) {
-    print('No file selected!', 'red');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    return;
+  let currentDir = process.cwd();
+  let selectedFile = null;
+  
+  while (!selectedFile) {
+    const selected = await selectFile(currentDir, `Current: ${currentDir}`, true, true);
+    
+    if (!selected) {
+      print('No selection made!', 'red');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return;
+    }
+    
+    if (selected.value === '..') {
+      currentDir = path.dirname(currentDir);
+    } else if (selected.isDirectory) {
+      currentDir = path.join(currentDir, selected.value);
+    } else {
+      // It's a file
+      selectedFile = selected;
+    }
   }
 
-  const inputFile = path.join(process.cwd(), selected.value);
+  const inputFile = path.join(currentDir, selectedFile.value);
   
   // Step 2: Select destination directory
   printHeader();
-  print(`📄 Import from: ${selected.value}`, 'green');
+  print(`📄 Import from: ${selectedFile.value}`, 'green');
   console.log();
   print('Step 2: Choose destination for imported files', 'cyan');
   
-  let currentDir = process.cwd();
+  currentDir = process.cwd();
   let selectedDestination = null;
   let createNewFolder = false;
   let newFolderName = '';
@@ -310,7 +615,7 @@ async function importProject() {
       selectedDestination = currentDir;
     } else if (choice.value === 'create_new') {
       printHeader();
-      print(`📄 Import from: ${selected.value}`, 'green');
+      print(`📄 Import from: ${selectedFile.value}`, 'green');
       print(`📁 Parent directory: ${currentDir}`, 'cyan');
       console.log();
       
@@ -362,7 +667,7 @@ async function importProject() {
   printHeader();
   print('Step 3: Confirm import settings', 'cyan');
   console.log();
-  print(`📄 Source file: ${selected.value}`, 'white');
+  print(`📄 Source file: ${selectedFile.value}`, 'white');
   print(`📁 Destination: ${selectedDestination}`, 'white');
   if (createNewFolder) {
     print(`🆕 New folder will be created`, 'green');
@@ -408,10 +713,112 @@ async function importProject() {
     print(`\n✅ Import successful!`, 'green');
     print(`📊 Imported ${result.fileCount} files (${result.totalSize}MB)`, 'cyan');
     print(`📁 Files imported to: ${selectedDestination}`, 'cyan');
+    print(`📄 From file: ${selectedFile.value}`, 'cyan');
   } else {
     print(`\n❌ Import failed: ${result.error}`, 'red');
   }
 
+  print('\nPress Enter to return to main menu...', 'dim');
+  await waitForEnter();
+}
+
+// Create structure from tree
+async function createFromTree() {
+  printHeader();
+  print('🌳 CREATE STRUCTURE FROM TREE', 'yellow');
+  console.log();
+  
+  const treeText = await collectTreeInput();
+  
+  if (!treeText.trim()) {
+    print('\n❌ No tree structure provided!', 'red');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return;
+  }
+  
+  // Parse the tree
+  const structure = parseTreeStructure(treeText);
+  
+  if (structure.length === 0) {
+    print('\n❌ Invalid tree structure!', 'red');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return;
+  }
+  
+  // Show parsed structure
+  printHeader();
+  print('📋 Parsed structure:', 'cyan');
+  console.log();
+  print(`Root folder: ${structure[0].name}`, 'yellow');
+  print(`Total items: ${countTreeItems(structure)}`, 'cyan');
+  console.log();
+  
+  // Select destination
+  print('Select destination for the structure:', 'cyan');
+  
+  let currentDir = process.cwd();
+  let selectedDestination = null;
+  
+  while (!selectedDestination) {
+    const destinationMenu = new SimpleMenu(
+      `Current directory: ${currentDir}`,
+      [
+        { name: '📁 Create structure here', value: 'use_current' },
+        { name: '📂 Browse folders', value: 'browse' },
+        { name: '❌ Cancel', value: 'cancel' }
+      ]
+    );
+    
+    const choice = await destinationMenu.show();
+    
+    if (choice.value === 'cancel') {
+      return;
+    } else if (choice.value === 'use_current') {
+      selectedDestination = currentDir;
+    } else if (choice.value === 'browse') {
+      const browseResult = await selectFile(currentDir, `Browse from: ${currentDir}`, true);
+      
+      if (browseResult) {
+        if (browseResult.value === '..') {
+          currentDir = path.dirname(currentDir);
+        } else if (browseResult.isDirectory) {
+          currentDir = path.join(currentDir, browseResult.value);
+        }
+      }
+    }
+  }
+  
+  // Confirm creation
+  printHeader();
+  const confirmMenu = new SimpleMenu(
+    `Create structure in: ${selectedDestination}?`,
+    [
+      { name: 'Yes, create structure', value: 'yes' },
+      { name: 'No, cancel', value: 'no' }
+    ]
+  );
+  
+  const confirm = await confirmMenu.show();
+  
+  if (confirm.value !== 'yes') {
+    return;
+  }
+  
+  // Create the structure
+  printHeader();
+  print('🔄 Creating structure...', 'yellow');
+  
+  try {
+    const stats = createStructureFromTree(structure, selectedDestination);
+    
+    print(`\n✅ Structure created successfully!`, 'green');
+    print(`📁 Created ${stats.folders} folders`, 'cyan');
+    print(`📄 Created ${stats.files} files`, 'cyan');
+    print(`📍 Location: ${path.join(selectedDestination, structure[0].name)}`, 'cyan');
+  } catch (error) {
+    print(`\n❌ Failed to create structure: ${error.message}`, 'red');
+  }
+  
   print('\nPress Enter to return to main menu...', 'dim');
   await waitForEnter();
 }
@@ -531,6 +938,14 @@ async function performExport(sourceDir, outputFile, useGitignore = false) {
     }
 
     walk(sourceDir);
+    
+    // Always add folder tree
+    output.push('\n// === Folder Tree ===');
+    const projectName = path.basename(sourceDir);
+    output.push(projectName);
+    const tree = buildFolderTree(sourceDir);
+    output.push(tree);
+    
     fs.writeFileSync(outputFile, output.join('\n'), 'utf8');
 
     return {
@@ -563,7 +978,7 @@ async function performImport(inputFile, outputDir) {
       const relativePath = parts[i].trim();
       const fileContent = parts[i + 1];
 
-      if (fileContent.includes('=== FOLDER TREE ===')) break;
+      if (fileContent.includes('=== Folder Tree ===')) break;
 
       const fullPath = path.join(outputDir, relativePath);
       const dir = path.dirname(fullPath);
@@ -592,27 +1007,6 @@ async function performImport(inputFile, outputDir) {
   }
 }
 
-// Helper functions
-function askQuestion(question) {
-  return new Promise((resolve) => {
-    rl.question(colors.cyan + question + colors.reset, (answer) => {
-      resolve(answer);
-    });
-  });
-}
-
-function waitForEnter() {
-  return new Promise((resolve) => {
-    process.stdin.setRawMode(true);
-    process.stdin.resume();
-    process.stdin.once('data', () => {
-      process.stdin.setRawMode(false);
-      process.stdin.pause();
-      resolve();
-    });
-  });
-}
-
 // Main menu
 async function mainMenu() {
   while (true) {
@@ -621,6 +1015,7 @@ async function mainMenu() {
       [
         { name: 'Export Project', value: 'export' },
         { name: 'Import Project', value: 'import' },
+        { name: 'Create Structure from Tree', value: 'tree' },
         { name: 'Exit', value: 'exit' }
       ]
     );
@@ -633,6 +1028,9 @@ async function mainMenu() {
         break;
       case 'import':
         await importProject();
+        break;
+      case 'tree':
+        await createFromTree();
         break;
       case 'exit':
         printHeader();
