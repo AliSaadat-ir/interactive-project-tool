@@ -1,127 +1,248 @@
-# Dubai Estate AI - OpenAI & n8n Integration
+# Interactive Project Export/Import Tool
 
-A Next.js-based real estate application featuring OpenAI GPT-4 integration for AI-powered assistance and n8n webhook integration for lead logging to Google Sheets.
+A powerful command-line tool designed to export and import JavaScript projects for seamless collaboration with AI assistants, particularly Claude AI Opus 4.
 
-## Features
+## 🎯 Why Use This Tool?
 
-- 🤖 **OpenAI GPT-4 Integration**: Streaming AI responses for real estate queries
-- 📊 **Lead Tracking**: Automatic logging to Google Sheets via n8n webhooks
-- 🏠 **Guided Flows**: Structured conversations for buyers, sellers, and referrals
-- 💬 **Real-time Streaming**: Token-by-token streaming for responsive chat experience
-- 📱 **Responsive Design**: Mobile-optimized with Tailwind CSS
-- 🔧 **Interactive Tools**: ROI calculator and referral forms
+If you're working with **Claude AI Opus 4** (which isn't yet available through API in most AI-powered editors like Cursor, Trace, Lovable, or Bolt), this tool allows you to:
+- Export your entire project into a single file
+- Share it with Claude AI in the chat interface
+- Get AI assistance on your complete codebase
+- Import Claude's suggestions back into your project structure
 
-## Environment Variables
+## 🚀 Supported JavaScript Frameworks
 
-Create a `.env.local` file in the root directory:
+This tool works perfectly with all major JavaScript frameworks and libraries:
 
-```env
-OPENAI_API_KEY=your-openai-api-key-here
-N8N_WEBHOOK_URL=your-n8n-webhook-url-here
-```
+- **React** / Next.js / Gatsby
+- **Vue.js** / Nuxt.js
+- **Angular**
+- **Svelte** / SvelteKit
+- **Solid.js**
+- **Preact**
+- **Alpine.js**
+- **Lit**
+- **Ember.js**
+- **Backbone.js**
+- **Express.js** / Fastify / Koa
+- **NestJS**
+- **Electron**
+- **React Native** / Expo
+- **Ionic**
+- **Node.js** applications
+- **TypeScript** projects
+- **Vanilla JavaScript** projects
 
-## n8n Webhook Setup
+## ✨ Features
 
-1. Create a new workflow in n8n
-2. Add a Webhook node as the trigger
-3. Configure the webhook to receive JSON data
-4. Add a Google Sheets node to append the data
-5. Map the following fields:
-   - Event Type
-   - Intent
-   - Flow
-   - Timestamp
-   - Additional data (ROI calculations, referral info, etc.)
+- 🎯 Interactive menu with arrow key navigation
+- 📤 Export entire projects to a single text file
+- 📥 Import projects with advanced directory selection
+- 📁 Visual file/directory browser for both export and import
+- 🎨 Colorful terminal interface
+- 📋 Optional .gitignore support during export
+- 🆕 Create new folders during import
+- 🚀 No external dependencies (uses only Node.js built-ins)
 
-## Installation
+## 📦 Installation
 
-1. Clone the repository:
+### Quick Install (Recommended)
 ```bash
-git clone https://github.com/yourusername/dubai-estate-ai.git
-cd dubai-estate-ai
+# Clone the repository
+git clone https://github.com/yourusername/interactive-project-tool.git
+cd interactive-project-tool
+
+# Make executable and run setup
+chmod +x setup.sh
+./setup.sh
 ```
 
-2. Install dependencies:
+### Manual Installation
 ```bash
-npm install
+# Make the script executable
+chmod +x project-tool.js
+
+# Run directly
+./project-tool.js
+# or
+node project-tool.js
+
+# Optional: Install globally
+npm install -g .
+project-tool
 ```
 
-3. Add your environment variables to `.env.local`
+## 🎮 Usage
 
-4. Start the development server:
+### Basic Usage
 ```bash
-npm run dev
+project-tool
+# or
+./project-tool.js
 ```
 
-## Key Components
+### Export Process
+1. Select **"Export Project"**
+2. Navigate to your project directory
+3. Choose whether to use .gitignore patterns
+4. Get your `export_[timestamp].txt` file
 
-### Chat API Route (`app/api/chat/route.ts`)
-- Integrates with OpenAI's GPT-4 API
-- Implements streaming responses using Server-Sent Events
-- Handles error cases gracefully
+### Import Process
+1. Select **"Import Project"**
+2. Choose your export file
+3. Select or create destination directory
+4. Confirm and import
 
-### Logging API Route (`app/api/log/route.ts`)
-- Forwards events to n8n webhook
-- Validates webhook URL configuration
-- Returns success/error status
+## 🤖 Using with Claude AI
 
-### ChatInterface Component
-- Manages conversation flows
-- Implements real-time streaming UI
-- Logs all user interactions
-- Handles guided conversations and free-form queries
+### 1. Export Your Project
+```bash
+project-tool
+# Select "Export Project"
+# Navigate to your project folder
+# The tool creates: export_1234567890.txt
+```
 
-## Event Types Logged
+### 2. Copy this Prompt for Claude AI
 
-- `user_intent`: Initial flow selection
-- `roi_calculation`: ROI calculator submissions with results
-- `referral_submission`: Referral form completions
-- `call_request`: Call scheduling requests
-- `email_request`: Email summary requests
-- `ai_query`: Free-form AI questions
+```text
+You are a code-export assistant that produces a single text file summarizing project structure and code contents. 
+Output requirements:
+1. The file must contain multiple sections:
+   - For each included file (extensions: .js, .jsx, .ts, .tsx, .css, .scss, .html, .json, .md, .config.js, .babelrc, and dotfiles), insert:
+     // File: relative/path/to/file
+     (then the entire content of that file)
+   - After listing all files, insert:
+     // === Folder Tree ===
+     Then a tree diagram using ASCII markers: 
+       ├── dir-or-file
+       │   └── nested
+       └── last
+2. Excluded:
+   - Directories: node_modules, .git, dist, build, .next, .vscode, and any directory that contains the script
+   - Files: .gitignore, package-lock.json
+3. Relative paths are from the project root (one level above script location).
+4. The folder tree:
+   - Use ├── for items except the last, └── for the last, indent nested levels with │    or blanks
+5. Output must be plain text in one file, no additional commentary or formatting markers.
+6. Do not mention the prompt itself or metadata; only generate the structured output according to rules.
+```
 
-## Deployment
+<details>
+<summary>📋 Click to copy the prompt</summary>
 
-Deploy on Vercel:
+```
+You are a code-export assistant that produces a single text file summarizing project structure and code contents. Output requirements: 1. The file must contain multiple sections: - For each included file (extensions: .js, .jsx, .ts, .tsx, .css, .scss, .html, .json, .md, .config.js, .babelrc, and dotfiles), insert: // File: relative/path/to/file (then the entire content of that file) - After listing all files, insert: // === Folder Tree === Then a tree diagram using ASCII markers: ├── dir-or-file │   └── nested └── last 2. Excluded: - Directories: node_modules, .git, dist, build, .next, .vscode, and any directory that contains the script - Files: .gitignore, package-lock.json 3. Relative paths are from the project root (one level above script location). 4. The folder tree: - Use ├── for items except the last, └── for the last, indent nested levels with │    or blanks 5. Output must be plain text in one file, no additional commentary or formatting markers. 6. Do not mention the prompt itself or metadata; only generate the structured output according to rules.
+```
 
-1. Push to GitHub
-2. Import project in Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy
+</details>
 
-## License
+### 3. In Claude AI Chat:
+1. Upload your `export_[timestamp].txt` file
+2. Paste the prompt above
+3. Ask Claude to help with your code
+4. Copy Claude's response to a new file
 
-MIT License
+### 4. Import Claude's Changes
+```bash
+project-tool
+# Select "Import Project"
+# Select the file from Claude
+# Choose where to import
+```
 
-// === Folder Tree ===
+## 🎯 Perfect Use Cases
 
-├── .env.local
-├── app/
-│   ├── api/
-│   │   ├── chat/
-│   │   │   └── route.ts
-│   │   └── log/
-│   │       └── route.ts
-│   ├── globals.css
-│   ├── layout.js
-│   └── page.js
-├── components/
-│   ├── ChatInterface.jsx
-│   ├── Finance.jsx
-│   ├── Footer.jsx
-│   ├── Header.jsx
-│   ├── HelpCenter.jsx
-│   ├── Hero.jsx
-│   ├── HowItWorks.jsx
-│   ├── Message.jsx
-│   ├── ReferEarn.jsx
-│   ├── Services.jsx
-│   └── Tools.jsx
-├── lib/
-│   └── n8nLead.ts
-├── next.config.js
-├── package.json
-├── README.md
-├── tailwind.config.js
-└── tsconfig.json
+- **Code Reviews**: Export your project for AI-powered code review
+- **Refactoring**: Get AI suggestions for improving your codebase
+- **Bug Fixing**: Share your entire project context for better debugging help
+- **Learning**: Ask Claude to explain complex parts of your codebase
+- **Documentation**: Generate documentation for your entire project
+- **Migration**: Get help migrating between frameworks or versions
 
+## ⚙️ Configuration
+
+### File Types Included
+- JavaScript: `.js`, `.jsx`, `.mjs`
+- TypeScript: `.ts`, `.tsx`
+- Styles: `.css`, `.scss`, `.sass`, `.less`
+- Markup: `.html`, `.xml`
+- Config: `.json`, `.yml`, `.yaml`
+- Documentation: `.md`, `.txt`
+- Dotfiles: `.env`, `.babelrc`, `.eslintrc`
+
+### Automatic Exclusions
+- `node_modules/`
+- `.git/`
+- `dist/`, `build/`, `.next/`
+- `package-lock.json`, `yarn.lock`
+- Binary files
+
+## 🛠️ Advanced Features
+
+### Using .gitignore
+When exporting, if a `.gitignore` file exists, you'll be asked whether to use its patterns for filtering. This ensures sensitive files aren't included.
+
+### Custom Directory Names
+During import, you can:
+- Create new directories with custom names
+- Use existing directories
+- Browse to any location on your system
+
+## 📊 Example Workflow
+
+```bash
+# 1. Export your React project
+$ project-tool
+> Export Project
+> Select: my-react-app/
+> Use .gitignore: Yes
+✅ Exported 156 files (2.4MB) to export_1705410000000.txt
+
+# 2. Share with Claude AI
+# Upload file + paste the prompt + ask your questions
+
+# 3. Import Claude's response
+$ project-tool  
+> Import Project
+> Select: claude_response.txt
+> Create new folder: my-react-app-updated
+✅ Imported 156 files to my-react-app-updated/
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - feel free to use this tool in your projects!
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**"Permission denied" error**
+```bash
+chmod +x project-tool.js
+```
+
+**"Command not found" after global install**
+```bash
+# Check npm bin directory
+npm bin -g
+# Add to PATH if needed
+```
+
+**Large projects take too long**
+- The tool automatically skips `node_modules` and build directories
+- Use .gitignore filtering to exclude unnecessary files
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/interactive-project-tool/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/interactive-project-tool/discussions)
+
+---
+
+Made with ❤️ for developers using AI assistants
