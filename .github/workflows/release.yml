@@ -1,0 +1,116 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+    
+    - name: Create Release Archive
+      run: |
+        # Create release directory
+        mkdir -p release/interactive-project-tool
+        
+        # Copy necessary files
+        cp project-tool.js release/interactive-project-tool/
+        cp README.md release/interactive-project-tool/
+        cp LICENSE release/interactive-project-tool/
+        cp CHANGELOG.md release/interactive-project-tool/
+        cp package.json release/interactive-project-tool/
+        cp quick-start-guide.md release/interactive-project-tool/
+        cp VERSION release/interactive-project-tool/
+        
+        # Create setup scripts if they don't exist
+        cat > release/interactive-project-tool/setup.sh << 'EOF'
+#!/bin/bash
+echo "🚀 Installing Interactive Project Tool..."
+chmod +x project-tool.js
+echo "✅ Installation complete!"
+echo "Run ./project-tool.js to start"
+EOF
+        
+        cat > release/interactive-project-tool/setup.ps1 << 'EOF'
+Write-Host "🚀 Installing Interactive Project Tool..." -ForegroundColor Cyan
+Write-Host "✅ Installation complete!" -ForegroundColor Green
+Write-Host "Run .\project-tool.js to start" -ForegroundColor Yellow
+EOF
+        
+        chmod +x release/interactive-project-tool/setup.sh
+        
+        # Create archives
+        cd release
+        tar -czf interactive-project-tool-${{ github.ref_name }}.tar.gz interactive-project-tool
+        zip -r interactive-project-tool-${{ github.ref_name }}.zip interactive-project-tool
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Interactive Project Tool ${{ github.ref }}
+        body: |
+          ## Interactive Project Tool ${{ github.ref }}
+          
+          ### Installation
+          
+          **Option 1: Download and extract**
+          ```bash
+          # For Linux/macOS
+          tar -xzf interactive-project-tool-${{ github.ref_name }}.tar.gz
+          cd interactive-project-tool
+          chmod +x setup.sh
+          ./setup.sh
+          
+          # For Windows
+          # Extract the zip file and run setup.ps1
+          ```
+          
+          **Option 2: Clone from repository**
+          ```bash
+          git clone https://github.com/${{ github.repository }}.git
+          cd interactive-project-tool
+          chmod +x project-tool.js
+          ./project-tool.js
+          ```
+          
+          ### What's New
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+          
+          ### Requirements
+          - Node.js 14.0.0 or higher
+          
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release Archive (tar.gz)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/interactive-project-tool-${{ github.ref_name }}.tar.gz
+        asset_name: interactive-project-tool-${{ github.ref_name }}.tar.gz
+        asset_content_type: application/gzip
+    
+    - name: Upload Release Archive (zip)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release/interactive-project-tool-${{ github.ref_name }}.zip
+        asset_name: interactive-project-tool-${{ github.ref_name }}.zip
+        asset_content_type: application/zip

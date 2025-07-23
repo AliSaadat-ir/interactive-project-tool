@@ -1,0 +1,44 @@
+# GitHub files
+.github/
+.git/
+
+# Documentation files (keep only essential ones)
+CONTRIBUTING.md
+github-setup-guide.md
+GITHUB_ACTIONS_FIX.md
+
+# Test files
+test-project/
+*.test.js
+
+# Export/Import files
+export_*.txt
+export_*.log
+recovered/
+imported/
+
+# Backup files
+*.backup
+*.backup.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Keep these files in npm package:
+# - project-tool.js
+# - README.md
+# - LICENSE
+# - package.json
+# - CHANGELOG.md
+# - VERSION
+# - quick-start-guide.md

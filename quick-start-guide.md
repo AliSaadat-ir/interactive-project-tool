@@ -1,11 +1,11 @@
 # Quick Start Guide - Interactive Project Tool
 
-## 🆕 What's New in v1.2
+## 🆕 What's New in v1.3
 
-- **Enhanced Import Process**: Step-by-step wizard with directory browsing
-- **Create New Folders**: Option to create custom-named folders during import
-- **Better Navigation**: Browse parent directories and select exact destination
-- **Improved UX**: Clear step indicators and better error handling
+- **Create Structure from Tree**: Paste tree diagrams to create folder/file structures
+- **Smart Import Filtering**: Only shows .txt files with "export" in the name
+- **PowerShell Compatibility**: Full support for Windows PowerShell terminals
+- **Improved Input Handling**: Better support for all terminal types
 
 ## 🚀 Installation (3 minutes)
 
@@ -46,13 +46,29 @@ npm install -g .
 ### Example 2: Import to New Location
 1. Run: `project-tool`
 2. Select **"Import Project"**
-3. **Step 1**: Choose your export file (e.g., `export_1234567890.txt`)
+3. **Step 1**: Choose your export file (only shows .txt files with "export" in name)
 4. **Step 2**: Choose destination:
    - **Use this directory**: Import to current location
    - **Create new folder**: Enter custom name (default: "recovered")
    - **Browse folders**: Navigate to another directory
 5. **Step 3**: Confirm settings and start import
 6. Files will be imported to your selected destination
+
+### Example 3: Create Structure from Tree (NEW!)
+1. Run: `project-tool`
+2. Select **"Create Structure from Tree"**
+3. Paste your tree structure:
+   ```
+   my-app
+   ├── src/
+   │   ├── components/
+   │   │   └── Button.jsx
+   │   └── index.js
+   └── package.json
+   ```
+4. Type `DONE` on a new line
+5. Choose where to create the structure
+6. Confirm creation
 
 ## 🎮 Keyboard Controls
 
@@ -83,15 +99,17 @@ project-tool/
 chmod +x project-tool.js
 ```
 
-### "Command not found" after global install
-```bash
-# Add to PATH or use npx
-npx project-tool
-```
+### PowerShell exits unexpectedly
+- Make sure you're using v1.3 or later
+- Type `DONE` (not double Enter) when pasting trees
 
-### Large projects take too long
-- The tool skips `node_modules` and build folders automatically
-- For very large projects (>1000 files), export may take 10-30 seconds
+### No export files showing in import
+- The tool filters to show only .txt files with "export" in the name
+- Navigate to the folder containing your export files
+
+### Tree structure not recognized
+- Make sure to type `DONE` on a new line after pasting
+- Check that your tree uses the correct characters (├── │ └──)
 
 ## 💡 Tips
 
@@ -99,6 +117,7 @@ npx project-tool
 2. **Share Code**: Export makes it easy to share via email/chat
 3. **Archive Projects**: Export old projects before deleting
 4. **Code Reviews**: Export specific folders for review
+5. **Quick Scaffolding**: Save common tree structures for reuse
 
 ## 📊 What Gets Exported?
 
@@ -135,28 +154,32 @@ Choose "Yes" to respect patterns like:
 - `temp/` - Excludes temp directory
 - `config/secret.json` - Excludes specific file
 
+### Creating Complex Structures
+You can create elaborate project structures:
+```
+full-stack-app
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   │   ├── auth.controller.js
+│   │   │   └── user.controller.js
+│   │   ├── models/
+│   │   │   └── user.model.js
+│   │   └── index.js
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   └── App.jsx
+│   └── package.json
+└── README.md
+DONE
+```
+
 ### Custom Output Location
 ```javascript
 // Edit line 280 in project-tool.js
 const outputFile = path.join('/custom/path', `export_${Date.now()}.txt`);
-```
-
-### Add More File Types
-```javascript
-// Edit line 337 in project-tool.js
-const INCLUDE_EXTS = [
-  // ... existing extensions
-  '.vue', '.svelte', '.astro'  // Add your extensions
-];
-```
-
-### Change Ignore Patterns
-```javascript
-// Edit line 342 in project-tool.js
-const IGNORE_DIRS = [
-  // ... existing directories
-  'coverage', 'tmp', '.cache'  // Add more
-];
 ```
 
 ## 🆘 Need Help?
@@ -171,7 +194,7 @@ const IGNORE_DIRS = [
 ### Export Process:
 ```
 ╔════════════════════════════════════════╗
-║   PROJECT EXPORT/IMPORT TOOL v1.2      ║
+║   PROJECT EXPORT/IMPORT TOOL v1.3      ║
 ╚════════════════════════════════════════╝
 
 📤 EXPORT PROJECT
@@ -182,12 +205,6 @@ Current: /Users/you/my-react-app
     3. 📄 package.json (2.1KB)
     4. ⬆️  .. (Parent Directory)
 
-📋 Found .gitignore file in the selected directory
-
-Would you like to use .gitignore patterns for filtering?
-  ▶ 1. Yes, use .gitignore patterns
-    2. No, use default filters only
-
 ✅ Export successful!
 📊 Exported 42 files (1.23MB)
 💾 Output saved to: /Users/you/export_1234567890.txt
@@ -195,41 +212,32 @@ Would you like to use .gitignore patterns for filtering?
 
 ### Import Process:
 ```
-╔════════════════════════════════════════╗
-║   PROJECT EXPORT/IMPORT TOOL v1.2      ║
-╚════════════════════════════════════════╝
-
 📥 IMPORT PROJECT
 
 Step 1: Select export file to import
+(Looking for .txt files with "export" in the name)
+
+Current: /Users/you/projects
   ▶ 1. 📄 export_1234567890.txt (1.2MB)
-    2. 📄 export_older.txt (856.3KB)
+    2. 📄 export_older.txt (856KB)
+    3. 📁 my-app
+    4. ⬆️  .. (Parent Directory)
+```
 
-📄 Import from: export_1234567890.txt
+### Tree Structure Creation:
+```
+🌳 CREATE STRUCTURE FROM TREE
 
-Step 2: Choose destination for imported files
+Enter the folder tree structure:
+(Paste your tree, then type "DONE" on a new line to finish)
 
-Current directory: /Users/you/projects
-  ▶ 1. 📁 Use this directory
-    2. 🆕 Create new folder here
-    3. 📂 Browse folders
-    4. ❌ Cancel
+[Your tree here]
+DONE
 
-Enter name for new folder (default: recovered): my-imported-project
-
-Step 3: Confirm import settings
-
-📄 Source file: export_1234567890.txt
-📁 Destination: /Users/you/projects/my-imported-project
-🆕 New folder will be created
-
-Start import with these settings?
-  ▶ 1. Yes, start import
-    2. No, cancel
-
-✅ Import successful!
-📊 Imported 42 files (1.23MB)
-📁 Files imported to: /Users/you/projects/my-imported-project
+✅ Structure created successfully!
+📁 Created 8 folders
+📄 Created 15 files
+📍 Location: /Users/you/projects/my-new-app
 ```
 
 Happy coding! 🎉

@@ -1,77 +1,67 @@
 #!/bin/bash
-# === setup.sh ===
-# Installation script for Interactive Project Tool
 
-echo "🚀 Interactive Project Tool Setup v1.2"
-echo "====================================="
-echo "✨ Now with enhanced import features!"
+# Interactive Project Tool Setup Script for Linux/macOS
+
+echo "╔════════════════════════════════════════╗"
+echo "║   INTERACTIVE PROJECT TOOL SETUP       ║"
+echo "╚════════════════════════════════════════╝"
 echo ""
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
     echo "❌ Node.js is not installed!"
-    echo "Please install Node.js from https://nodejs.org/"
+    echo "Please install Node.js 14.0.0 or higher from https://nodejs.org"
     exit 1
 fi
 
 # Check Node.js version
-NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
-if [ "$NODE_VERSION" -lt 12 ]; then
-    echo "❌ Node.js version 12 or higher is required!"
-    echo "Current version: $(node -v)"
+NODE_VERSION=$(node -v | cut -d'v' -f2)
+NODE_MAJOR=$(echo $NODE_VERSION | cut -d'.' -f1)
+
+if [ $NODE_MAJOR -lt 14 ]; then
+    echo "❌ Node.js version $NODE_VERSION is too old!"
+    echo "Please update to Node.js 14.0.0 or higher"
     exit 1
 fi
 
-echo "✅ Node.js $(node -v) detected"
+echo "✅ Node.js $NODE_VERSION detected"
+echo ""
 
 # Make the script executable
+echo "🔧 Making project-tool.js executable..."
 chmod +x project-tool.js
-echo "✅ Made project-tool.js executable"
 
-# Ask for installation type
+# Ask if user wants to install globally
 echo ""
-echo "Choose installation type:"
-echo "1. Global installation (recommended)"
-echo "2. Local installation"
-echo "3. Skip installation (just make executable)"
+echo "Would you like to install globally? (you can run 'project-tool' from anywhere)"
+echo "This requires npm and may need sudo permissions."
+read -p "Install globally? (y/N): " -n 1 -r
 echo ""
-read -p "Enter your choice (1-3): " choice
 
-case $choice in
-    1)
-        echo "🔄 Installing globally..."
-        npm install -g .
-        echo "✅ Global installation complete!"
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "📦 Installing globally..."
+    if npm install -g .; then
+        echo "✅ Global installation successful!"
+        echo ""
         echo "You can now run 'project-tool' from anywhere"
-        ;;
-    2)
-        echo "🔄 Installing locally..."
-        npm install
-        echo "✅ Local installation complete!"
-        echo "Run with: ./project-tool.js or npm start"
-        ;;
-    3)
-        echo "✅ Setup complete!"
-        echo "Run with: ./project-tool.js"
-        ;;
-    *)
-        echo "❌ Invalid choice"
-        exit 1
-        ;;
-esac
+    else
+        echo "⚠️  Global installation failed. You may need to run with sudo:"
+        echo "sudo npm install -g ."
+        echo ""
+        echo "For now, you can still run locally with: ./project-tool.js"
+    fi
+else
+    echo "✅ Local installation complete!"
+    echo ""
+    echo "Run the tool with: ./project-tool.js"
+fi
 
 echo ""
-echo "🎉 Setup completed successfully!"
+echo "🎉 Setup complete!"
 echo ""
-echo "📋 What's new in v1.2:"
-echo "  • Enhanced import with directory browser"
-echo "  • Create new folders during import"
-echo "  • Step-by-step import wizard"
-echo "  • Better error handling"
+echo "Quick start:"
+echo "  - Export a project: Select 'Export Project' from the menu"
+echo "  - Import a project: Select 'Import Project' from the menu"
+echo "  - Create structure: Select 'Create Structure from Tree' from the menu"
 echo ""
-echo "To start the tool, run:"
-if [ "$choice" = "1" ]; then
-    echo "  project-tool"
-else
-    echo "  ./project-tool.js"
-fi
+echo "For more information, see README.md"

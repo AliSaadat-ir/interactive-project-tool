@@ -274,6 +274,15 @@ npm bin -g
 - Type `DONE` on a new line when pasting tree structures
 - Use arrow keys for navigation
 
+**Node.js version error**
+- Minimum required version is Node.js 14.0.0
+- Check your version: `node --version`
+- Update if needed: https://nodejs.org
+
+**GitHub Actions failing**
+- See [GITHUB_ACTIONS_FIX.md](GITHUB_ACTIONS_FIX.md) for details
+- Update Node.js versions in workflow files
+
 **Large projects take too long**
 - The tool automatically skips `node_modules` and build directories
 - Use .gitignore filtering to exclude unnecessary files

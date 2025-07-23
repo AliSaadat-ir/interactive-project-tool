@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-// === INTERACTIVE PROJECT EXPORT/IMPORT TOOL v1.3 ===
+// === INTERACTIVE PROJECT EXPORT/IMPORT TOOL v1.3.0 ===
+// Compatible with Node.js 14.0.0 and higher
 // Save this as: project-tool.js
 
 const fs = require('fs');
