@@ -7,6 +7,7 @@ A powerful command-line tool that combines project export/import capabilities wi
 - 📤 **Export Projects**: Convert your entire project into a single file
 - 📥 **Import Projects**: Restore projects with advanced directory selection
 - 🌳 **Tree Structure Creation**: Create folder/file structures from tree diagrams
+- 🗑️ **Export File Management**: Clean up export files with single/batch deletion
 - 🌐 **Translation Management**: Full synchronization of translation files across languages
 - 🤖 **AI Integration**: Works perfectly with Claude AI and supports OpenAI API
 - 🔄 **Auto-Translation**: Automatically translate missing keys using AI
@@ -153,6 +154,46 @@ Output requirements:
 3. Upload your export file to Claude AI along with the prompt
 4. Get Claude's response and save it as a new file
 5. Import Claude's changes back to your project
+
+### Managing Export Files
+
+Clean up accumulated export files easily:
+
+```bash
+project-tool
+> Manage Export Files
+```
+
+Options:
+- **Delete Single File**: Select and delete one export file
+- **Delete Multiple Files**: Select multiple files with space key
+- **Browse by Folder**: Navigate directories to manage files
+- **Clean All**: Remove all export files from current directory
+
+Features:
+- File preview before deletion
+- Size and date information
+- Multi-select with Space key, A for select all
+- Safety confirmations for batch operations
+- Folder navigation to find export files anywhere
+
+Visual example for batch deletion:
+```
+🗑️  DELETE MULTIPLE EXPORT FILES
+
+Select files to delete (Space to select, A for all):
+
+  ▶ [✓] export_20250803_2135.txt (245.3KB) - 08/03/2025
+    [✓] export_20250803_1922.txt (189.7KB) - 08/03/2025
+    [ ] export_20250802_1445.txt (567.2KB) - 08/02/2025
+    [ ] export_20250801_0930.txt (123.4KB) - 08/01/2025
+
+Selected: 2 file(s)
+
+Use ↑↓ arrows to navigate, Space to select/deselect
+Press A to select/deselect all, Enter to confirm
+Press Ctrl+C to cancel
+```
 
 ### Create Structure from Tree
 
@@ -329,6 +370,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## 🆕 What's New in v4.1
 
 ### Major Improvements
+- **Export File Management**: Clean up export files with single/batch deletion
 - **Enhanced UX**: All confirmations now use arrow-key selection instead of Y/n prompts
 - **Better Tree Creation**: Added folder selection options similar to import feature
 - **No More Conflicts**: .env file moved to installation directory
@@ -336,11 +378,20 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - **Auto-Open Folders**: Option to open created/imported folders automatically
 - **First-Run Experience**: Welcome message with option to setup API keys
 
+### Export File Management
+- Single file deletion with preview
+- Multi-select batch deletion (Space to select, A for all)
+- Browse folders to find and manage export files
+- Clean all option with double confirmation
+- Shows file size and modification date
+
 ### Bug Fixes
 - Fixed `Cannot find module './lib/utils/treeParser'` error
 - Fixed .env conflicts with user projects
 - Fixed unclear confirmation prompts
 - Fixed missing folder creation options
+- Fixed Windows 11 folder/file opening
+- Fixed export filename format
 
 ## 📞 Support
 

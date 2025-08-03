@@ -50,6 +50,7 @@ const TranslationManager = require('./lib/translation/manager');
 const { exportProject } = require('./lib/export-import/exporter');
 const { importProject } = require('./lib/export-import/importer');
 const { createFromTree } = require('./lib/export-import/treeBuilder');
+const { manageExportFiles } = require('./lib/export-import/exportFileManager');
 const { SimpleMenu } = require('./lib/core/menu');
 const { printHeader, print, clearScreen } = require('./lib/core/terminal');
 const { askQuestion } = require('./lib/core/input');
@@ -150,6 +151,7 @@ async function mainMenu() {
         { name: '📤 Export Project to File', value: 'export' },
         { name: '📥 Import Project from File', value: 'import' },
         { name: '🌳 Create Structure from Tree Diagram', value: 'tree' },
+        { name: '🗑️  Manage Export Files', value: 'manage_exports' },
         { name: '🌐 Manage Translations (Advanced)', value: 'translations' },
         { name: hasApiKeys ? '🔑 Update API Keys' : '🔑 Setup API Keys (Recommended)', value: 'setup_api' },
         { name: '❌ Exit', value: 'exit' }
@@ -169,6 +171,10 @@ async function mainMenu() {
         
       case 'tree':
         await createFromTreeEnhanced();
+        break;
+        
+      case 'manage_exports':
+        await manageExportFiles();
         break;
         
       case 'translations':

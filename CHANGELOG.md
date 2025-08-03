@@ -14,6 +14,9 @@ All notable changes to the Interactive Project Tool will be documented in this f
 - Detailed fallback conflict resolution with file preview
 - Skip option in conflict resolution
 - Default folder name suggestion for tree creation
+- Export file management with single and batch deletion
+- Multi-select capability for batch file operations
+- Folder browsing for export file management
 
 ### Changed
 - Moved .env file to installation directory to avoid conflicts
