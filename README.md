@@ -9,6 +9,7 @@ A powerful command-line tool that combines project export/import capabilities wi
 - 🌳 **Tree Structure Creation**: Create folder/file structures from tree diagrams
 - 🗑️ **Export File Management**: Clean up export files with single/batch deletion
 - 🌐 **Translation Management**: Full synchronization of translation files across languages
+- 🏗️ **Translation Setup**: Create translation structure for projects without i18n
 - 🤖 **AI Integration**: Works perfectly with Claude AI and supports OpenAI API
 - 🔄 **Auto-Translation**: Automatically translate missing keys using AI
 - 📊 **Translation Reports**: Generate detailed translation analysis
@@ -86,6 +87,7 @@ project-tool
 ```bash
 project-tool
 > Manage Translations
+> Scan Project
 > Full Synchronization
 ```
 
@@ -96,6 +98,28 @@ This will:
 - Translate missing keys using AI
 - Remove unused translations
 
+#### Create Translation Structure
+For projects without translation setup:
+```bash
+project-tool
+> Manage Translations
+> Create Translation Structure
+> Select languages with Space key
+> Confirm creation
+```
+
+This creates:
+```
+lib/translations/
+├── index.ts          # Main export file
+├── types.ts          # TypeScript types
+└── languages/
+    ├── en.ts        # English (required)
+    ├── ar.ts        # Arabic (optional)
+    ├── es.ts        # Spanish (optional)
+    └── ...          # Other selected languages
+```
+
 ## 🎮 Enhanced User Experience
 
 ### Arrow-Key Selection
@@ -104,6 +128,17 @@ All confirmations now use intuitive arrow-key selection:
 Would you like to export this directory?
   ▶ ✓ Yes (default)
     ✗ No
+```
+
+### Multi-Language Selection
+When creating translation structure:
+```
+Select languages to include (Space to select, Enter to confirm):
+  ▶ [✓] English (en) - Required
+    [✓] Arabic (ar)
+    [ ] Spanish (es)
+    [ ] French (fr)
+    [ ] Persian/Farsi (fa)
 ```
 
 ### Folder Creation Options
@@ -165,14 +200,14 @@ project-tool
 ```
 
 Options:
-- **Delete Single File**: Select and delete one export file
+- **Delete Single File**: Select and delete one export file with preview
 - **Delete Multiple Files**: Select multiple files with space key
 - **Browse by Folder**: Navigate directories to manage files
 - **Clean All**: Remove all export files from current directory
 
 Features:
 - File preview before deletion
-- Size and date information
+- Size, date, and time information
 - Multi-select with Space key, A for select all
 - Safety confirmations for batch operations
 - Folder navigation to find export files anywhere
@@ -183,10 +218,10 @@ Visual example for batch deletion:
 
 Select files to delete (Space to select, A for all):
 
-  ▶ [✓] export_20250803_2135.txt (245.3KB) - 08/03/2025
-    [✓] export_20250803_1922.txt (189.7KB) - 08/03/2025
-    [ ] export_20250802_1445.txt (567.2KB) - 08/02/2025
-    [ ] export_20250801_0930.txt (123.4KB) - 08/01/2025
+  ▶ [✓] export_20250803_2135.txt (245.3KB) - 08/03/2025 21:35:42
+    [✓] export_20250803_1922.txt (189.7KB) - 08/03/2025 19:22:15
+    [ ] export_20250802_1445.txt (567.2KB) - 08/02/2025 14:45:30
+    [ ] export_20250801_0930.txt (123.4KB) - 08/01/2025 09:30:00
 
 Selected: 2 file(s)
 
@@ -227,9 +262,16 @@ The tool detects various translation patterns:
 - `$t.someKey` (Vue style)
 - `translation('someKey')`
 
+### Quote Normalization
+The tool now properly handles different quote styles:
+- `"Just Browsing"` and `'Just Browsing'` are treated as the same
+- Smart conflict detection prevents false duplicates
+- Preserves original quote style in final output
+
 ### Translation Structure
 ```
 lib/translations/
+├── index.ts          # Main export with useTranslation hook
 ├── types.ts          # TypeScript types
 └── languages/
     ├── en.ts        # English
@@ -244,6 +286,14 @@ The tool automatically detects common translation structures:
 - `src/translations/languages/`
 - `locales/`
 - `i18n/`
+
+### Creating Translation Structure
+For projects without translations:
+1. Detects translation usage (t.key patterns)
+2. Prompts to create structure
+3. Lets you select languages
+4. Creates all necessary files
+5. Populates with detected keys
 
 ## ⚙️ Configuration
 
@@ -281,6 +331,7 @@ project-tool --setup
 ```
 
 ### Translation Sync Options
+- **Scan Project**: Detect all translation usage
 - **Full Sync**: Complete synchronization of all files
 - **Add Missing**: Only add missing translations
 - **Remove Unused**: Clean up unused keys
@@ -320,8 +371,23 @@ project-tool --sync
 # Interactive management
 project-tool
 > Manage Translations
+> Scan Project
 > Full Synchronization
 ✅ All languages synchronized
+```
+
+### Setting Up Translations
+```bash
+# For new projects
+project-tool
+> Manage Translations
+> Create Translation Structure
+> Select languages (Space to toggle)
+> ✓ English (required)
+> ✓ Arabic
+> ✓ Spanish
+> Create
+✅ Translation structure created
 ```
 
 ## 🔧 Troubleshooting
@@ -351,6 +417,11 @@ If you see `Cannot find module './lib/utils/treeParser'`:
 - Ensure all files are properly installed
 - Reinstall the tool: `npm install -g .`
 
+**Translation Conflicts**
+- The tool now properly handles different quote styles
+- False duplicates are automatically resolved
+- Manual resolution available for true conflicts
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -369,6 +440,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🆕 What's New in v4.1
 
+### Major Features
+- **Translation Structure Creation**: Create i18n setup for projects without translations
+- **Multi-Language Selection**: Interactive language selection with Space key
+- **Quote Normalization**: Properly handles different quote styles in translation detection
+- **Time Display**: Shows time alongside date in file listings
+
 ### Major Improvements
 - **Export File Management**: Clean up export files with single/batch deletion
 - **Enhanced UX**: All confirmations now use arrow-key selection instead of Y/n prompts
@@ -383,15 +460,46 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - Multi-select batch deletion (Space to select, A for all)
 - Browse folders to find and manage export files
 - Clean all option with double confirmation
-- Shows file size and modification date
+- Shows file size, date, and time
 
 ### Bug Fixes
+- Fixed quote normalization in fallback text detection
+- Fixed time display in file listings
 - Fixed `Cannot find module './lib/utils/treeParser'` error
 - Fixed .env conflicts with user projects
 - Fixed unclear confirmation prompts
 - Fixed missing folder creation options
 - Fixed Windows 11 folder/file opening
 - Fixed export filename format
+
+## 🚀 Git Push Commands for v4.1
+
+```bash
+# Stage all changes
+git add .
+
+# Commit with version bump
+git commit -m "feat: Release v4.1 - Translation structure creation and quote normalization
+
+- Add translation structure creation for projects without i18n setup
+- Implement multi-language selection with Space key
+- Fix quote normalization in fallback text detection
+- Add time display alongside date in file listings
+- Update README and CHANGELOG for v4.1"
+
+# Tag the release
+git tag -a v4.1.0 -m "Version 4.1.0 - Translation structure creation and enhanced features"
+
+# Push to GitHub
+git push origin main
+git push origin v4.1.0
+
+# Create GitHub release
+# Go to: https://github.com/AliSaadat-ir/interactive-project-tool/releases/new
+# Select tag: v4.1.0
+# Title: v4.1.0 - Translation Structure Creation
+# Copy release notes from CHANGELOG.md
+```
 
 ## 📞 Support
 
