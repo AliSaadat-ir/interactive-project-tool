@@ -10,17 +10,25 @@ All notable changes to the Interactive Project Tool will be documented in this f
 - Exit confirmation dialog
 - Option to open created folders automatically
 - First-run welcome experience
+- Separate scan option in translation management
+- Detailed fallback conflict resolution with file preview
+- Skip option in conflict resolution
 
 ### Changed
 - Moved .env file to installation directory to avoid conflicts
 - Enhanced UX with clearer messages and better flow
 - Improved error handling with helpful suggestions
 - Better visual feedback throughout the application
+- Translation management now requires scan before other operations
+- Import settings now show file size and clear action descriptions
 
 ### Fixed
 - Potential .env conflicts with user projects
 - Unclear confirmation prompts
 - Missing folder creation options in tree feature
+- Windows 11 folder/file opening (uses explorer/notepad)
+- Export filenames now use readable date format
+- Timezone display with local time
 
 ## [4.0.0] - 2025-08-03
 
