@@ -1,6 +1,6 @@
 {
   "name": "project-tool",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Interactive project export/import tool with advanced translation management",
   "main": "index.js",
   "bin": {
@@ -25,7 +25,9 @@
     "auto-translate",
     "openai",
     "claude-ai",
-    "tree-structure"
+    "tree-structure",
+    "arrow-keys",
+    "interactive-cli"
   ],
   "author": "Ali Saadat",
   "license": "MIT",

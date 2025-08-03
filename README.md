@@ -1,4 +1,4 @@
-# Interactive Project Tool
+# Interactive Project Tool v4.1
 
 A powerful command-line tool that combines project export/import capabilities with advanced translation management, designed for seamless collaboration with AI assistants like Claude AI.
 
@@ -12,6 +12,7 @@ A powerful command-line tool that combines project export/import capabilities wi
 - 🔄 **Auto-Translation**: Automatically translate missing keys using AI
 - 📊 **Translation Reports**: Generate detailed translation analysis
 - 🔑 **Built-in API Setup**: Interactive API key configuration
+- ✨ **Enhanced UX**: All confirmations use arrow-key selection for better experience
 
 ## 🚀 Quick Start
 
@@ -93,6 +94,26 @@ This will:
 - Update TypeScript types automatically
 - Translate missing keys using AI
 - Remove unused translations
+
+## 🎮 Enhanced User Experience
+
+### Arrow-Key Selection
+All confirmations now use intuitive arrow-key selection:
+```
+Would you like to export this directory?
+  ▶ ✓ Yes (default)
+    ✗ No
+```
+
+### Folder Creation Options
+When creating structures from tree diagrams:
+- 📍 Current directory
+- 🆕 Create in new parent folder
+- 📂 Browse and select directory
+- ❌ Cancel
+
+### Exit Confirmation
+The tool now asks for confirmation before exiting, preventing accidental exits.
 
 ## 🤖 Using with Claude AI
 
@@ -180,6 +201,12 @@ The tool automatically detects common translation structures:
 
 ## ⚙️ Configuration
 
+### Environment Variables
+The tool stores API keys in the installation directory to avoid conflicts with project .env files:
+```
+<installation-dir>/.env
+```
+
 ### File Types Included
 - JavaScript: `.js`, `.jsx`, `.mjs`
 - TypeScript: `.ts`, `.tsx`
@@ -203,9 +230,8 @@ The tool automatically detects common translation structures:
 # Setup API keys interactively
 project-tool --setup
 
-# Or add them manually to .env
-OPENAI_API_KEY=sk-your-key-here
-GOOGLE_TRANSLATE_API_KEY=your-google-key
+# Keys are stored in installation directory
+# No conflicts with project .env files
 ```
 
 ### Translation Sync Options
@@ -225,7 +251,7 @@ When exporting, you can choose to use .gitignore patterns for filtering sensitiv
 project-tool
 > Export Project
 > Select: my-react-app/
-> Use .gitignore: Yes
+> Use .gitignore: ✓ Yes (default)
 ✅ Exported 156 files (2.4MB)
 
 # Share with AI or team
@@ -266,13 +292,18 @@ npx project-tool
 **API Key Issues**
 ```bash
 project-tool --setup
-# Or create .env manually
+# Keys are stored in installation directory
 ```
 
 **Large Projects**
 - Use .gitignore filtering
 - Exclude unnecessary directories
 - Split into smaller exports if needed
+
+**Module Not Found Error**
+If you see `Cannot find module './lib/utils/treeParser'`:
+- Ensure all files are properly installed
+- Reinstall the tool: `npm install -g .`
 
 ## 🤝 Contributing
 
@@ -290,13 +321,21 @@ node index.js
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🆕 What's New in v4.0
+## 🆕 What's New in v4.1
 
-- **Unified Tool**: Combined export/import with translation management
-- **API Key Setup**: Interactive setup for translation APIs
-- **Better Structure**: Modular architecture with lib/ subdirectories
-- **Enhanced UX**: Improved menus and user feedback
-- **Global Installation**: Works with `project-tool` command globally
+### Major Improvements
+- **Enhanced UX**: All confirmations now use arrow-key selection instead of Y/n prompts
+- **Better Tree Creation**: Added folder selection options similar to import feature
+- **No More Conflicts**: .env file moved to installation directory
+- **Exit Confirmation**: Prevents accidental exits with confirmation dialog
+- **Auto-Open Folders**: Option to open created/imported folders automatically
+- **First-Run Experience**: Welcome message with option to setup API keys
+
+### Bug Fixes
+- Fixed `Cannot find module './lib/utils/treeParser'` error
+- Fixed .env conflicts with user projects
+- Fixed unclear confirmation prompts
+- Fixed missing folder creation options
 
 ## 📞 Support
 

@@ -2,6 +2,26 @@
 
 All notable changes to the Interactive Project Tool will be documented in this file.
 
+## [4.1.0] - 2025-08-04
+
+### Added
+- Arrow-key selection for all confirmations (replaced Y/n prompts)
+- Folder creation options for tree structure feature
+- Exit confirmation dialog
+- Option to open created folders automatically
+- First-run welcome experience
+
+### Changed
+- Moved .env file to installation directory to avoid conflicts
+- Enhanced UX with clearer messages and better flow
+- Improved error handling with helpful suggestions
+- Better visual feedback throughout the application
+
+### Fixed
+- Potential .env conflicts with user projects
+- Unclear confirmation prompts
+- Missing folder creation options in tree feature
+
 ## [4.0.0] - 2025-08-03
 
 ### Added
