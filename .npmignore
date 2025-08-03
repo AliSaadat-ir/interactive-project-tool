@@ -6,10 +6,16 @@
 CONTRIBUTING.md
 github-setup-guide.md
 GITHUB_ACTIONS_FIX.md
+GIT_PUSH_GUIDE.md
+macos-compatibility.md
+windows-fix-guide.md
+MIGRATION.md
+installation-guide.md
 
 # Test files
 test-project/
 *.test.js
+test-export-file.txt
 
 # Export/Import files
 export_*.txt
@@ -34,11 +40,22 @@ Thumbs.db
 # Logs
 *.log
 
+# Git scripts (removed)
+git-commands.ps1
+git-commands.sh
+git-setup.bat
+update.ps1
+update.sh
+
 # Keep these files in npm package:
-# - project-tool.js
+# - index.js
+# - bin/project-tool.js
+# - lib/ (all subdirectories)
 # - README.md
 # - LICENSE
 # - package.json
 # - CHANGELOG.md
 # - VERSION
 # - quick-start-guide.md
+# - setup.sh
+# - setup.ps1

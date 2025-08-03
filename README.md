@@ -1,146 +1,110 @@
-# Interactive Project Export/Import Tool
+# Interactive Project Tool
 
-A powerful command-line tool designed to export and import JavaScript projects for seamless collaboration with AI assistants, particularly Claude AI Opus 4.
+A powerful command-line tool that combines project export/import capabilities with advanced translation management, designed for seamless collaboration with AI assistants like Claude AI.
 
-## 🎯 Why Use This Tool?
+## 🎯 Key Features
 
-If you're working with **Claude AI Opus 4** (which isn't yet available through API in most AI-powered editors like Cursor, Trace, Lovable, or Bolt), this tool allows you to:
-- Export your entire project into a single file
-- Share it with Claude AI in the chat interface
-- Get AI assistance on your complete codebase
-- Import Claude's suggestions back into your project structure
-- **NEW**: Create project structures from tree diagrams
+- 📤 **Export Projects**: Convert your entire project into a single file
+- 📥 **Import Projects**: Restore projects with advanced directory selection
+- 🌳 **Tree Structure Creation**: Create folder/file structures from tree diagrams
+- 🌐 **Translation Management**: Full synchronization of translation files across languages
+- 🤖 **AI Integration**: Works perfectly with Claude AI and supports OpenAI API
+- 🔄 **Auto-Translation**: Automatically translate missing keys using AI
+- 📊 **Translation Reports**: Generate detailed translation analysis
+- 🔑 **Built-in API Setup**: Interactive API key configuration
 
-## 🚀 Supported JavaScript Frameworks
+## 🚀 Quick Start
 
-This tool works perfectly with all major JavaScript frameworks and libraries:
+### Installation
 
-- **React** / Next.js / Gatsby
-- **Vue.js** / Nuxt.js
-- **Angular**
-- **Svelte** / SvelteKit
-- **Solid.js**
-- **Preact**
-- **Alpine.js**
-- **Lit**
-- **Ember.js**
-- **Backbone.js**
-- **Express.js** / Fastify / Koa
-- **NestJS**
-- **Electron**
-- **React Native** / Expo
-- **Ionic**
-- **Node.js** applications
-- **TypeScript** projects
-- **Vanilla JavaScript** projects
-
-## ✨ Features
-
-- 🎯 Interactive menu with arrow key navigation
-- 📤 Export entire projects to a single text file
-- 📥 Import projects with advanced directory selection
-- 🌳 **NEW**: Create folder/file structure from tree diagrams
-- 📁 Visual file/directory browser for both export and import
-- 🎨 Colorful terminal interface
-- 📋 Optional .gitignore support during export
-- 🆕 Create new folders during import
-- 🔍 Smart filtering for export files during import
-- 🚀 No external dependencies (uses only Node.js built-ins)
-- 💻 Full PowerShell compatibility
-
-## 📦 Installation
-
-### Quick Install (Recommended)
 ```bash
 # Clone the repository
 git clone https://github.com/AliSaadat-ir/interactive-project-tool.git
 cd interactive-project-tool
 
-# Make executable and run setup
-chmod +x setup.sh
-./setup.sh
-```
-
-### Manual Installation
-```bash
-# Make the script executable
-chmod +x project-tool.js
-
-# Run directly
-./project-tool.js
-# or
-node project-tool.js
-
-# Optional: Install globally
+# Install globally
 npm install -g .
+
+# Run the tool
 project-tool
 ```
 
-## 🎮 Usage
+### First Run Setup
 
-### Basic Usage
+On first run, the tool will prompt you to set up API keys for better translation quality:
+- **OpenAI API Key**: For high-quality translations
+- **Google Translate API Key**: Alternative translation service
+- **Skip**: Use free translation service (limited)
+
+## 📖 Usage
+
+### Basic Commands
+
 ```bash
 # Interactive mode (default)
 project-tool
-# or
-./project-tool.js
 
 # Show help
 project-tool --help
 
 # Show version
 project-tool --version
+
+# Setup API keys
+project-tool --setup
+
+# Translation commands
+project-tool --sync    # Sync all translation files
+project-tool --check   # Check translation consistency
 ```
 
-### Export Process
-1. Select **"Export Project"**
-2. Navigate to your project directory
-3. Choose whether to use .gitignore patterns
-4. Get your `export_[timestamp].txt` file
+### Export/Import Workflow
 
-### Import Process
-1. Select **"Import Project"**
-2. Choose your export file (only shows .txt files with "export" in name)
-3. Select or create destination directory
-4. Confirm and import
-
-### Create Structure from Tree (NEW!)
-1. Select **"Create Structure from Tree"**
-2. Paste your tree structure
-3. Type `DONE` on a new line
-4. Choose destination directory
-5. Confirm creation
-
-#### Example Tree Input:
-```
-my-project
-├── src/
-│   ├── components/
-│   │   ├── Header.jsx
-│   │   └── Footer.jsx
-│   ├── utils/
-│   │   └── helpers.js
-│   └── index.js
-├── public/
-│   └── index.html
-├── package.json
-└── README.md
-DONE
+#### 1. Export Your Project
+```bash
+project-tool
+> Export Project
+> Navigate to your project folder
+> Choose .gitignore usage
+# Creates: export_[timestamp].txt
 ```
 
-This will create all folders and empty files ready for your content!
+#### 2. Import a Project
+```bash
+project-tool
+> Import Project
+> Select export file
+> Choose destination
+> Confirm import
+```
+
+### Translation Management
+
+#### Full Synchronization
+```bash
+project-tool
+> Manage Translations
+> Full Synchronization
+```
+
+This will:
+- Scan all components for translation usage
+- Sync all language files to have identical keys
+- Update TypeScript types automatically
+- Translate missing keys using AI
+- Remove unused translations
 
 ## 🤖 Using with Claude AI
 
-### 1. Export Your Project
+### Export Your Project for Claude
+
+1. Export your project:
 ```bash
 project-tool
-# Select "Export Project"
-# Navigate to your project folder
-# The tool creates: export_1234567890.txt
+> Export Project
 ```
 
-### 2. Copy this Prompt for Claude AI
+2. Use this prompt with Claude AI:
 
 ```text
 You are a code-export assistant that produces a single text file summarizing project structure and code contents. 
@@ -165,29 +129,54 @@ Output requirements:
 6. Do not mention the prompt itself or metadata; only generate the structured output according to rules.
 ```
 
-### 3. In Claude AI Chat:
-1. Upload your `export_[timestamp].txt` file
-2. Paste the prompt above
-3. Ask Claude to help with your code
-4. Copy Claude's response to a new file
+3. Upload your export file to Claude AI along with the prompt
+4. Get Claude's response and save it as a new file
+5. Import Claude's changes back to your project
 
-### 4. Import Claude's Changes
+### Create Structure from Tree
+
+Perfect for quickly setting up project templates:
+
 ```bash
 project-tool
-# Select "Import Project"
-# Select the file from Claude
-# Choose where to import
+> Create Structure from Tree
+> Paste your tree:
+my-app
+├── src/
+│   ├── components/
+│   │   └── Button.jsx
+│   └── index.js
+└── package.json
+DONE
 ```
 
-## 🎯 Perfect Use Cases
+## 🌐 Translation Features
 
-- **Code Reviews**: Export your project for AI-powered code review
-- **Refactoring**: Get AI suggestions for improving your codebase
-- **Bug Fixing**: Share your entire project context for better debugging help
-- **Learning**: Ask Claude to explain complex parts of your codebase
-- **Documentation**: Generate documentation for your entire project
-- **Migration**: Get help migrating between frameworks or versions
-- **Scaffolding**: Quickly create project structures from examples
+### Supported Patterns
+The tool detects various translation patterns:
+- `t.someKey`
+- `t['someKey']`
+- `{t.someKey || 'Fallback'}`
+- `$t.someKey` (Vue style)
+- `translation('someKey')`
+
+### Translation Structure
+```
+lib/translations/
+├── types.ts          # TypeScript types
+└── languages/
+    ├── en.ts        # English
+    ├── ar.ts        # Arabic
+    ├── es.ts        # Spanish
+    └── fr.ts        # French
+```
+
+### Auto-Detection
+The tool automatically detects common translation structures:
+- `lib/translations/languages/`
+- `src/translations/languages/`
+- `locales/`
+- `i18n/`
 
 ## ⚙️ Configuration
 
@@ -209,102 +198,111 @@ project-tool
 
 ## 🛠️ Advanced Features
 
-### Using .gitignore
-When exporting, if a `.gitignore` file exists, you'll be asked whether to use its patterns for filtering. This ensures sensitive files aren't included.
-
-### Custom Directory Names
-During import, you can:
-- Create new directories with custom names
-- Use existing directories
-- Browse to any location on your system
-
-### Tree Structure Creation
-Perfect for:
-- Setting up project templates
-- Recreating structures from documentation
-- Quick prototyping
-- Teaching/learning project organization
-
-## 📊 Example Workflow
-
+### API Key Management
 ```bash
-# 1. Export your React project
-$ project-tool
+# Setup API keys interactively
+project-tool --setup
+
+# Or add them manually to .env
+OPENAI_API_KEY=sk-your-key-here
+GOOGLE_TRANSLATE_API_KEY=your-google-key
+```
+
+### Translation Sync Options
+- **Full Sync**: Complete synchronization of all files
+- **Add Missing**: Only add missing translations
+- **Remove Unused**: Clean up unused keys
+- **Generate Report**: Create detailed analysis
+
+### .gitignore Support
+When exporting, you can choose to use .gitignore patterns for filtering sensitive files.
+
+## 📊 Example Workflows
+
+### Complete Project Export/Import
+```bash
+# Export
+project-tool
 > Export Project
 > Select: my-react-app/
 > Use .gitignore: Yes
-✅ Exported 156 files (2.4MB) to export_1705410000000.txt
+✅ Exported 156 files (2.4MB)
 
-# 2. Share with Claude AI
-# Upload file + paste the prompt + ask your questions
-
-# 3. Import Claude's response
-$ project-tool  
+# Share with AI or team
+# Import response
+project-tool  
 > Import Project
-> Select: claude_response.txt
-> Create new folder: my-react-app-updated
-✅ Imported 156 files to my-react-app-updated/
-
-# 4. Create a new project structure
-$ project-tool
-> Create Structure from Tree
-> [Paste tree and type DONE]
-✅ Created 12 folders and 24 files
+> Select: response.txt
+> Create new folder: my-app-updated
+✅ Imported 156 files
 ```
 
-## 🤝 Contributing
+### Translation Management
+```bash
+# Check status
+project-tool --check
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+# Full sync
+project-tool --sync
 
-## 📄 License
-
-MIT License - feel free to use this tool in your projects!
+# Interactive management
+project-tool
+> Manage Translations
+> Full Synchronization
+✅ All languages synchronized
+```
 
 ## 🔧 Troubleshooting
 
 ### Common Issues
 
-**"Permission denied" error**
+**"Command not found"**
 ```bash
-chmod +x project-tool.js
+npm install -g .
+# Or use npx
+npx project-tool
 ```
 
-**"Command not found" after global install**
+**API Key Issues**
 ```bash
-# Check npm bin directory
-npm bin -g
-# Add to PATH if needed
+project-tool --setup
+# Or create .env manually
 ```
 
-**PowerShell input issues**
-- Make sure you're using the latest version (v1.3+)
-- Type `DONE` on a new line when pasting tree structures
-- Use arrow keys for navigation
+**Large Projects**
+- Use .gitignore filtering
+- Exclude unnecessary directories
+- Split into smaller exports if needed
 
-**Node.js version error**
-- Minimum required version is Node.js 14.0.0
-- Check your version: `node --version`
-- Update if needed: https://nodejs.org
+## 🤝 Contributing
 
-**GitHub Actions failing**
-- See [GITHUB_ACTIONS_FIX.md](GITHUB_ACTIONS_FIX.md) for details
-- Update Node.js versions in workflow files
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-**Large projects take too long**
-- The tool automatically skips `node_modules` and build directories
-- Use .gitignore filtering to exclude unnecessary files
+### Development Setup
+```bash
+git clone https://github.com/AliSaadat-ir/interactive-project-tool.git
+cd interactive-project-tool
+npm install
+node index.js
+```
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🆕 What's New in v4.0
+
+- **Unified Tool**: Combined export/import with translation management
+- **API Key Setup**: Interactive setup for translation APIs
+- **Better Structure**: Modular architecture with lib/ subdirectories
+- **Enhanced UX**: Improved menus and user feedback
+- **Global Installation**: Works with `project-tool` command globally
 
 ## 📞 Support
 
 - **Issues**: [GitHub Issues](https://github.com/AliSaadat-ir/interactive-project-tool/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/AliSaadat-ir/interactive-project-tool/discussions)
-
-## 🆕 What's New in v1.3
-
-- **Create Structure from Tree**: Paste any tree diagram to create folder/file structure
-- **Smart Import Filtering**: Only shows relevant export files
-- **PowerShell Compatibility**: Full support for Windows PowerShell
-- **Better Input Handling**: Improved readline interface for all platforms
+- **Repository**: [https://github.com/AliSaadat-ir/interactive-project-tool](https://github.com/AliSaadat-ir/interactive-project-tool)
 
 ---
 

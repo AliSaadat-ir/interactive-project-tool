@@ -1,6 +1,56 @@
 # Changelog
 
-All notable changes to the Interactive Project Export/Import Tool will be documented in this file.
+All notable changes to the Interactive Project Tool will be documented in this file.
+
+## [4.0.0] - 2025-08-03
+
+### Added
+- **Translation Management System**: Complete translation synchronization and management
+  - Auto-detect translation file structures
+  - Sync all language files to have identical keys
+  - Automatic translation using OpenAI or free APIs
+  - TypeScript types generation and management
+  - Translation usage scanner for components
+  - Detailed translation reports
+- **API Key Setup**: Interactive setup for translation APIs
+  - Built-in prompts for OpenAI and Google Translate keys
+  - Automatic .env file creation
+  - Command line option: `--setup`
+- **Translation Commands**:
+  - `--sync`: Quick sync all translation files
+  - `--check`: Check translation consistency
+- **Modular Architecture**: Reorganized code into logical modules
+  - `lib/core/`: Core utilities (menu, terminal, input, fileSystem)
+  - `lib/export-import/`: Export/import functionality
+  - `lib/translation/`: Translation management system
+  - `lib/utils/`: Shared utilities
+
+### Changed
+- **Package Name**: Unified to `project-tool` (was `translation-tool` in some files)
+- **Global Command**: Now installs as `project-tool` globally
+- **Menu System**: Added translation management and API setup options
+- **Version**: Bumped to 4.0.0 to reflect major feature additions
+- **README**: Complete rewrite with Claude AI prompt included
+
+### Fixed
+- Version consistency across all files
+- Package.json metadata and scripts
+- Binary file naming consistency
+- PowerShell compatibility improvements
+
+### Removed
+- Redundant update scripts (update.ps1, update.sh)
+- Git setup scripts (git-commands.ps1, git-commands.sh, git-setup.bat)
+- Test export files
+
+## [3.0.0] - 2025-08-02 (Pre-release)
+
+### Added
+- Initial translation management features
+- Translation scanner for detecting usage in code
+- Translation synchronizer for keeping files in sync
+- Translation analyzer for reporting
+- API integration for auto-translation
 
 ## [1.3.0] - 2025-07-24
 
