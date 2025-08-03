@@ -13,6 +13,7 @@ All notable changes to the Interactive Project Tool will be documented in this f
 - Separate scan option in translation management
 - Detailed fallback conflict resolution with file preview
 - Skip option in conflict resolution
+- Default folder name suggestion for tree creation
 
 ### Changed
 - Moved .env file to installation directory to avoid conflicts
@@ -21,6 +22,7 @@ All notable changes to the Interactive Project Tool will be documented in this f
 - Better visual feedback throughout the application
 - Translation management now requires scan before other operations
 - Import settings now show file size and clear action descriptions
+- File details now display below menu options for better readability
 
 ### Fixed
 - Potential .env conflicts with user projects

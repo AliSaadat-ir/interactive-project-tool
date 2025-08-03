@@ -171,6 +171,11 @@ my-app
 DONE
 ```
 
+When selecting "Create in new parent folder":
+- Default name suggested: `[root-folder]_workspace`
+- Example: For tree with root "my-app", suggests "my-app_workspace"
+- Can be customized or use default by pressing Enter
+
 ## 🌐 Translation Features
 
 ### Supported Patterns

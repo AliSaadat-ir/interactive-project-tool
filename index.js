@@ -262,17 +262,25 @@ async function createFromTreeEnhanced() {
   switch (destChoice.value) {
     case 'new_parent':
       printHeader();
-      const parentName = await askQuestion('Enter parent folder name: ');
-      if (!parentName.trim()) {
-        print('\n❌ No folder name provided', 'red');
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        return;
-      }
-      destination = path.join(process.cwd(), parentName.trim());
+      print('🆕 Create New Parent Folder', 'cyan');
+      console.log();
       
-      if (!fs.existsSync(destination)) {
+      // Suggest default name based on root folder of tree structure
+      const suggestedName = structure[0].name + '_workspace';
+      const parentName = await askQuestion(`Enter parent folder name (default: ${suggestedName}): `);
+      const finalName = parentName.trim() || suggestedName;
+      
+      destination = path.join(process.cwd(), finalName);
+      
+      if (fs.existsSync(destination)) {
+        print(`\n⚠️  Folder "${finalName}" already exists!`, 'yellow');
+        const useExisting = await askConfirmMenu('Use existing folder?');
+        if (!useExisting) {
+          return;
+        }
+      } else {
         fs.mkdirSync(destination, { recursive: true });
-        print(`\n✅ Created parent folder: ${parentName}`, 'green');
+        print(`\n✅ Created parent folder: ${finalName}`, 'green');
       }
       break;
       
