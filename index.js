@@ -330,9 +330,16 @@ async function createFromTreeEnhanced() {
     
     if (openFolder) {
       const { exec } = require('child_process');
-      const command = process.platform === 'win32' ? 'start' : 
-                      process.platform === 'darwin' ? 'open' : 'xdg-open';
-      exec(`${command} "${rootPath}"`);
+      if (process.platform === 'win32') {
+        // Windows: Use explorer to open folder
+        exec(`explorer "${rootPath.replace(/\//g, '\\')}"`);
+      } else if (process.platform === 'darwin') {
+        // macOS
+        exec(`open "${rootPath}"`);
+      } else {
+        // Linux
+        exec(`xdg-open "${rootPath}"`);
+      }
     }
   } catch (error) {
     print(`\n❌ Failed to create structure: ${error.message}`, 'red');
