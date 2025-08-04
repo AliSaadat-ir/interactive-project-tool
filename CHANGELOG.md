@@ -2,6 +2,96 @@
 
 All notable changes to the Interactive Project Tool will be documented in this file.
 
+## [4.3.0] - 2025-08-04
+
+### 🎉 Major Features
+
+#### Advanced Conflict Resolution
+- **Key Renaming**: Ability to assign different keys to conflicting translation texts
+  - Multi-select interface for choosing which texts need new keys
+  - Auto-generated key suggestions (key1, key2, keyAlt, keyVariant)
+  - Custom key naming support
+  - Automatic file updates with new keys
+- **Save/Exit Options**: During conflict resolution, users can now:
+  - Save progress and exit with Ctrl+C
+  - Discard changes and exit
+  - Continue resolving remaining conflicts
+- **Progress Tracking**: Shows total conflicts count before starting resolution
+- **Conflict Summary**: View all conflicts overview before resolution
+
+#### Extended Settings System
+- **Categorized Settings Menu**: Organized settings into logical groups:
+  - Translation Settings (API, reports, backup)
+  - File & Folder Settings (IDE, file manager, open behavior)
+  - Export/Import Settings (paths, prefixes, patterns)
+  - Display Settings (logging, verbosity)
+- **Export Customization**:
+  - Custom export file prefix configuration
+  - Default export path selection
+  - Maximum export files limit with auto-cleanup
+  - Custom exclusion patterns management
+- **File Management Options**:
+  - Choose between opening files or containing folders
+  - Configure preferred file manager for folder browsing
+  - Show/hide hidden files in browsers
+
+#### Enhanced IDE Integration
+- **Trae Editor Support**: Added detection and support for Trae editor
+- **Custom IDE Commands**: Ability to specify custom editor commands
+- **Folder Opening**: Option to open containing folder instead of file
+- **Running IDE Priority**: Prioritizes currently running IDEs over configured preferences
+
+#### Advanced Translation Reports
+- **Multiple Formats**: 
+  - Enhanced Markdown with executive summary
+  - Interactive HTML with charts and progress bars
+  - Comprehensive JSON data export
+  - CSV format for spreadsheet analysis
+- **Health Score**: Project health rating (0-100) based on translation completeness
+- **Quality Metrics**: Language-specific quality ratings (excellent/good/fair/poor)
+- **Usage Statistics**: Most and least used translation keys
+- **Visual Progress**: Progress bars and charts in HTML reports
+- **Prioritized Recommendations**: Actionable items sorted by priority
+
+### ✨ Improvements
+
+#### Translation Detection
+- **Optional Chaining Support**: Now detects patterns like `t?.key`, `t?.['key']`
+- **Better Pattern Matching**: Improved regex patterns for edge cases
+- **Dynamic Key Detection**: Better warnings for dynamic translation keys
+
+#### User Experience
+- **Fixed Exit Flow**: "No" option in exit confirmation now properly returns to menu
+- **Better Navigation**: Consistent back navigation across all menus
+- **Detailed Descriptions**: Settings show real-time descriptions based on selection
+- **Progress Indicators**: Better visual feedback during long operations
+
+#### File Management
+- **Smart File Opening**: Automatically detects best method to open files/folders
+- **Platform Detection**: Better detection of available file managers per OS
+- **Batch Operations**: Improved multi-file selection and management
+
+### 🐛 Bug Fixes
+- Fixed exit program not returning to menu when selecting "No"
+- Fixed Trae editor not being detected in running IDEs list
+- Fixed settings not persisting correctly in some scenarios
+- Fixed conflict resolution not properly tracking changes
+- Fixed report generation creating incomplete files
+- Fixed optional chaining patterns not being detected
+
+### 🔧 Technical Improvements
+- Refactored settings management for better organization
+- Improved error handling throughout the application
+- Better memory management for large projects
+- Enhanced file system operations with proper error recovery
+- Optimized translation scanning performance
+
+### 📝 Documentation
+- Updated README with comprehensive feature documentation
+- Added examples for all new features
+- Improved troubleshooting section
+- Enhanced API documentation
+
 ## [4.2.1] - 2025-08-04
 
 ### Enhanced

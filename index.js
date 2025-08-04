@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// === PROJECT TOOL v4.2.1 - ENHANCED VERSION ===
-// Export/Import + Translation Management with Better UX
+// === PROJECT TOOL v4.3.0 - ENHANCED VERSION ===
+// Export/Import + Translation Management with Extended Settings
 
 const fs = require('fs');
 const path = require('path');
@@ -51,8 +51,20 @@ function loadSettings() {
   const defaultSettings = {
     defaultTranslationApi: 'auto',
     autoOpenReports: true,
-    firstRun: true,
-    preferredIde: 'auto'
+    autoOpenFolder: false,
+    openFolderInsteadOfFile: false,
+    preferredIde: 'auto',
+    preferredFileManager: 'auto',
+    showHiddenFiles: false,
+    excludePatterns: [],
+    customExportPath: '',
+    exportFilePrefix: 'export',
+    maxExportFiles: 50,
+    confirmBeforeDelete: true,
+    translationReportFormat: 'both', // markdown, json, both
+    autoBackupBeforeSync: true,
+    showDetailedLogs: false,
+    firstRun: true
   };
   
   if (fs.existsSync(SETTINGS_PATH)) {
@@ -114,12 +126,12 @@ function checkApiKeysStatus(env) {
     availableApis: {
       openai: hasOpenAI,
       google: hasGoogle,
-      mymemory: true // Always available
+      mymemory: true
     }
   };
 }
 
-// Setup API keys in installation directory
+// Setup API keys
 async function setupApiKeys() {
   printHeader();
   print('🔑 API KEY SETUP', 'yellow');
@@ -133,7 +145,7 @@ async function setupApiKeys() {
     if (!overwrite) {
       print('\n⚠️  Setup cancelled', 'yellow');
       await new Promise(resolve => setTimeout(resolve, 1500));
-      return false; // Return false to indicate no changes
+      return false;
     }
   }
   
@@ -177,7 +189,7 @@ async function setupApiKeys() {
   }
   
   await new Promise(resolve => setTimeout(resolve, 2000));
-  return true; // Return true to indicate changes were made
+  return true;
 }
 
 // Detect currently running IDEs/editors
@@ -189,13 +201,10 @@ async function detectRunningIDEs() {
     let command;
     
     if (process.platform === 'win32') {
-      // Windows: Use tasklist to find running processes
       command = 'tasklist /FO CSV';
     } else if (process.platform === 'darwin') {
-      // macOS: Use ps to find running processes
       command = 'ps aux';
     } else {
-      // Linux: Use ps to find running processes
       command = 'ps aux';
     }
     
@@ -207,7 +216,7 @@ async function detectRunningIDEs() {
       
       const output = stdout.toLowerCase();
       
-      // Check for common IDEs and editors
+      // Extended IDE map with Trae
       const ideMap = {
         'code': ['code', 'vscode', 'visual studio code'],
         'subl': ['subl', 'sublime', 'sublime_text'],
@@ -220,10 +229,10 @@ async function detectRunningIDEs() {
         'kate': ['kate'],
         'nano': ['nano'],
         'vim': ['vim'],
-        'emacs': ['emacs']
+        'emacs': ['emacs'],
+        'trae': ['trae', 'trae.exe']
       };
       
-      // Check which IDEs are running
       for (const [command, processNames] of Object.entries(ideMap)) {
         for (const processName of processNames) {
           if (output.includes(processName)) {
@@ -239,60 +248,108 @@ async function detectRunningIDEs() {
   });
 }
 
-// Open file with appropriate application - Enhanced with running IDE detection
+// Open file or folder with appropriate application
+async function openFileOrFolder(targetPath, settings, isFolder = false) {
+  const { exec } = require('child_process');
+  
+  // Determine if we should open folder instead of file
+  if (!isFolder && settings.openFolderInsteadOfFile) {
+    targetPath = path.dirname(targetPath);
+    isFolder = true;
+  }
+  
+  if (isFolder) {
+    // Open folder with file manager
+    return openFolderWithExplorer(targetPath, settings);
+  } else {
+    // Open file with IDE
+    return openFileWithIDE(targetPath, settings);
+  }
+}
+
+// Open folder with file explorer
+async function openFolderWithExplorer(folderPath, settings) {
+  const { exec } = require('child_process');
+  
+  print('📂 Opening folder...', 'dim');
+  
+  const commands = [];
+  
+  // Add preferred file manager first
+  if (settings.preferredFileManager !== 'auto') {
+    commands.push(settings.preferredFileManager);
+  }
+  
+  // Add platform-specific commands
+  if (process.platform === 'win32') {
+    commands.push('explorer');
+  } else if (process.platform === 'darwin') {
+    commands.push('open');
+  } else {
+    commands.push('xdg-open', 'nautilus', 'dolphin', 'thunar');
+  }
+  
+  // Try each command
+  for (const command of commands) {
+    try {
+      await new Promise((resolve, reject) => {
+        exec(`${command} "${folderPath}"`, (error) => {
+          if (error) reject(error);
+          else resolve();
+        });
+      });
+      
+      print(`📁 Opened folder with ${command}`, 'green');
+      return true;
+    } catch (error) {
+      continue;
+    }
+  }
+  
+  print(`⚠️  Could not open folder automatically. Location: ${folderPath}`, 'yellow');
+  return false;
+}
+
+// Open file with IDE
 async function openFileWithIDE(filePath, settings) {
   const { exec } = require('child_process');
   
   print('🔍 Detecting running IDEs...', 'dim');
   
-  // First priority: Detect currently running IDEs
   const runningIDEs = await detectRunningIDEs();
-  
   const openCommands = [];
   
-  // Add running IDEs first (highest priority)
   if (runningIDEs.length > 0) {
     openCommands.push(...runningIDEs);
     print(`📍 Found running IDE(s): ${runningIDEs.join(', ')}`, 'cyan');
   }
   
-  // Second priority: User's preferred IDE (if not already in running IDEs)
   if (settings.preferredIde !== 'auto' && !runningIDEs.includes(settings.preferredIde)) {
     openCommands.push(settings.preferredIde);
   }
   
-  // Third priority: Common IDEs and editors based on platform
   const commonIDEs = [];
   if (process.platform === 'win32') {
-    commonIDEs.push('code', 'notepad++', 'notepad');
+    commonIDEs.push('code', 'notepad++', 'trae', 'notepad');
   } else if (process.platform === 'darwin') {
-    commonIDEs.push('code', 'subl', 'atom', 'open');
+    commonIDEs.push('code', 'subl', 'atom', 'trae', 'open');
   } else {
-    commonIDEs.push('code', 'subl', 'gedit', 'kate', 'xdg-open');
+    commonIDEs.push('code', 'subl', 'gedit', 'kate', 'trae', 'xdg-open');
   }
   
-  // Add common IDEs that aren't already in the list
   for (const ide of commonIDEs) {
     if (!openCommands.includes(ide)) {
       openCommands.push(ide);
     }
   }
   
-  // Try each command in order
   for (const command of openCommands) {
     try {
       await new Promise((resolve, reject) => {
-        if (command === 'open' || command === 'xdg-open') {
-          exec(`${command} "${filePath}"`, (error) => {
-            if (error) reject(error);
-            else resolve();
-          });
-        } else {
-          exec(`${command} "${filePath}"`, (error) => {
-            if (error) reject(error);
-            else resolve();
-          });
-        }
+        exec(`${command} "${filePath}"`, (error) => {
+          if (error) reject(error);
+          else resolve();
+        });
       });
       
       const isRunning = runningIDEs.includes(command);
@@ -300,67 +357,12 @@ async function openFileWithIDE(filePath, settings) {
       print(`📖 Opening file with ${command} ${status}`, 'green');
       return true;
     } catch (error) {
-      // Continue to next command
       continue;
     }
   }
   
   print(`⚠️  Could not open file automatically. File location: ${filePath}`, 'yellow');
   return false;
-}
-
-// Settings menu with details
-async function showSettingsMenu() {
-  const settings = loadSettings();
-  const env = loadEnvFromInstallDir();
-  const apiStatus = checkApiKeysStatus(env);
-  
-  while (true) {
-    printHeader();
-    print('⚙️  SETTINGS', 'yellow');
-    console.log();
-    
-    const menuOptions = [
-      { name: '🌐 Translation API Settings', value: 'api_settings', 
-        detail: `Current: ${settings.defaultTranslationApi}\nChoose default API for translations` },
-      { name: '🔑 API Keys Management', value: 'api_keys',
-        detail: `OpenAI: ${apiStatus.hasOpenAI ? '✅ Configured' : '❌ Not set'}\nGoogle: ${apiStatus.hasGoogle ? '✅ Configured' : '❌ Not set'}` },
-      { name: '📖 Report Opening Settings', value: 'report_settings',
-        detail: `Auto-open: ${settings.autoOpenReports ? 'Enabled' : 'Disabled'}\nPreferred IDE: ${settings.preferredIde}` },
-      { name: '🔄 Reset to Defaults', value: 'reset',
-        detail: 'Reset all settings to default values\nThis will not affect your API keys' },
-      { name: '↩️  Back to Main Menu', value: 'back',
-        detail: 'Return to the main menu' }
-    ];
-    
-    const menu = new DetailedSettingsMenu(
-      'Select a setting to configure:',
-      menuOptions
-    );
-    
-    const choice = await menu.show();
-    
-    switch (choice.value) {
-      case 'api_settings':
-        await configureApiSettings(settings);
-        break;
-      case 'api_keys':
-        const updated = await setupApiKeys();
-        if (updated) {
-          // Reload environment after API key update
-          Object.assign(env, loadEnvFromInstallDir());
-        }
-        break;
-      case 'report_settings':
-        await configureReportSettings(settings);
-        break;
-      case 'reset':
-        await resetSettings();
-        break;
-      case 'back':
-        return;
-    }
-  }
 }
 
 // Detailed settings menu class
@@ -383,7 +385,6 @@ class DetailedSettingsMenu extends SimpleMenu {
       }
     });
 
-    // Show details for selected option
     const selectedOption = this.options[this.selectedIndex];
     if (selectedOption.detail) {
       console.log();
@@ -402,6 +403,332 @@ class DetailedSettingsMenu extends SimpleMenu {
   }
 }
 
+// Enhanced settings menu
+async function showSettingsMenu() {
+  const settings = loadSettings();
+  const env = loadEnvFromInstallDir();
+  const apiStatus = checkApiKeysStatus(env);
+  
+  while (true) {
+    printHeader();
+    print('⚙️  SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      { 
+        name: '🌐 Translation Settings', 
+        value: 'translation_settings', 
+        detail: 'Configure translation APIs, report formats, and backup options\nManage how translations are processed and saved'
+      },
+      { 
+        name: '📂 File & Folder Settings', 
+        value: 'file_settings',
+        detail: 'Control how files and folders are opened\nConfigure IDE preferences and file manager options'
+      },
+      { 
+        name: '📤 Export/Import Settings', 
+        value: 'export_settings',
+        detail: 'Customize export file naming and locations\nSet patterns for file exclusion and limits'
+      },
+      { 
+        name: '🔑 API Keys Management', 
+        value: 'api_keys',
+        detail: `OpenAI: ${apiStatus.hasOpenAI ? '✅ Configured' : '❌ Not set'}\nGoogle: ${apiStatus.hasGoogle ? '✅ Configured' : '❌ Not set'}`
+      },
+      { 
+        name: '🎨 Display Settings', 
+        value: 'display_settings',
+        detail: 'Control verbosity and logging levels\nCustomize terminal output preferences'
+      },
+      { 
+        name: '🔄 Reset to Defaults', 
+        value: 'reset',
+        detail: 'Reset all settings to default values\nThis will not affect your API keys'
+      },
+      { 
+        name: '↩️  Back to Main Menu', 
+        value: 'back',
+        detail: 'Return to the main menu'
+      }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Select a setting category:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'translation_settings':
+        await configureTranslationSettings(settings);
+        break;
+      case 'file_settings':
+        await configureFileSettings(settings);
+        break;
+      case 'export_settings':
+        await configureExportSettings(settings);
+        break;
+      case 'api_keys':
+        const updated = await setupApiKeys();
+        if (updated) {
+          Object.assign(env, loadEnvFromInstallDir());
+        }
+        break;
+      case 'display_settings':
+        await configureDisplaySettings(settings);
+        break;
+      case 'reset':
+        await resetSettings();
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
+// Configure translation settings
+async function configureTranslationSettings(settings) {
+  while (true) {
+    printHeader();
+    print('🌐 TRANSLATION SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      {
+        name: `Default Translation API: ${settings.defaultTranslationApi}`,
+        value: 'default_api',
+        detail: 'Choose which translation API to use by default'
+      },
+      {
+        name: `Report Format: ${settings.translationReportFormat}`,
+        value: 'report_format',
+        detail: 'Choose format for translation reports (markdown/json/both)'
+      },
+      {
+        name: `Auto-backup before sync: ${settings.autoBackupBeforeSync ? 'Enabled' : 'Disabled'}`,
+        value: 'auto_backup',
+        detail: 'Automatically backup translations before synchronization'
+      },
+      {
+        name: '↩️  Back',
+        value: 'back'
+      }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Configure translation options:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'default_api':
+        await configureApiSettings(settings);
+        break;
+      case 'report_format':
+        await configureReportFormat(settings);
+        break;
+      case 'auto_backup':
+        settings.autoBackupBeforeSync = !settings.autoBackupBeforeSync;
+        saveSettings(settings);
+        print(`\n✅ Auto-backup ${settings.autoBackupBeforeSync ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
+// Configure file settings
+async function configureFileSettings(settings) {
+  while (true) {
+    printHeader();
+    print('📂 FILE & FOLDER SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      {
+        name: `Auto-open reports: ${settings.autoOpenReports ? 'Enabled' : 'Disabled'}`,
+        value: 'auto_open_reports',
+        detail: 'Automatically open generated reports after creation'
+      },
+      {
+        name: `Open folder instead of file: ${settings.openFolderInsteadOfFile ? 'Enabled' : 'Disabled'}`,
+        value: 'open_folder_instead',
+        detail: 'Open containing folder instead of the file itself'
+      },
+      {
+        name: `Preferred IDE: ${settings.preferredIde}`,
+        value: 'preferred_ide',
+        detail: 'Default IDE/editor for opening files'
+      },
+      {
+        name: `Preferred File Manager: ${settings.preferredFileManager}`,
+        value: 'preferred_file_manager',
+        detail: 'Default application for browsing folders'
+      },
+      {
+        name: `Show hidden files: ${settings.showHiddenFiles ? 'Enabled' : 'Disabled'}`,
+        value: 'show_hidden',
+        detail: 'Show hidden files in file browsers'
+      },
+      {
+        name: '↩️  Back',
+        value: 'back'
+      }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Configure file and folder options:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'auto_open_reports':
+        settings.autoOpenReports = !settings.autoOpenReports;
+        saveSettings(settings);
+        print(`\n✅ Auto-open reports ${settings.autoOpenReports ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'open_folder_instead':
+        settings.openFolderInsteadOfFile = !settings.openFolderInsteadOfFile;
+        saveSettings(settings);
+        print(`\n✅ Open folder instead ${settings.openFolderInsteadOfFile ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'preferred_ide':
+        await configurePreferredIDE(settings);
+        break;
+      case 'preferred_file_manager':
+        await configurePreferredFileManager(settings);
+        break;
+      case 'show_hidden':
+        settings.showHiddenFiles = !settings.showHiddenFiles;
+        saveSettings(settings);
+        print(`\n✅ Show hidden files ${settings.showHiddenFiles ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
+// Configure export settings
+async function configureExportSettings(settings) {
+  while (true) {
+    printHeader();
+    print('📤 EXPORT/IMPORT SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      {
+        name: `Export file prefix: "${settings.exportFilePrefix}"`,
+        value: 'export_prefix',
+        detail: 'Prefix for exported files (e.g., export_20250804.txt)'
+      },
+      {
+        name: `Custom export path: ${settings.customExportPath || 'Current directory'}`,
+        value: 'export_path',
+        detail: 'Default location for saving export files'
+      },
+      {
+        name: `Max export files: ${settings.maxExportFiles}`,
+        value: 'max_files',
+        detail: 'Maximum number of export files to keep'
+      },
+      {
+        name: `Confirm before delete: ${settings.confirmBeforeDelete ? 'Enabled' : 'Disabled'}`,
+        value: 'confirm_delete',
+        detail: 'Ask for confirmation before deleting files'
+      },
+      {
+        name: 'Exclude patterns',
+        value: 'exclude_patterns',
+        detail: `${settings.excludePatterns.length} custom patterns defined`
+      },
+      {
+        name: '↩️  Back',
+        value: 'back'
+      }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Configure export/import options:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'export_prefix':
+        await configureExportPrefix(settings);
+        break;
+      case 'export_path':
+        await configureExportPath(settings);
+        break;
+      case 'max_files':
+        await configureMaxFiles(settings);
+        break;
+      case 'confirm_delete':
+        settings.confirmBeforeDelete = !settings.confirmBeforeDelete;
+        saveSettings(settings);
+        print(`\n✅ Confirm before delete ${settings.confirmBeforeDelete ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'exclude_patterns':
+        await configureExcludePatterns(settings);
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
+// Configure display settings
+async function configureDisplaySettings(settings) {
+  while (true) {
+    printHeader();
+    print('🎨 DISPLAY SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      {
+        name: `Show detailed logs: ${settings.showDetailedLogs ? 'Enabled' : 'Disabled'}`,
+        value: 'detailed_logs',
+        detail: 'Show verbose output during operations'
+      },
+      {
+        name: '↩️  Back',
+        value: 'back'
+      }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Configure display options:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'detailed_logs':
+        settings.showDetailedLogs = !settings.showDetailedLogs;
+        saveSettings(settings);
+        print(`\n✅ Detailed logs ${settings.showDetailedLogs ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
 // Configure API settings
 async function configureApiSettings(settings) {
   const env = loadEnvFromInstallDir();
@@ -412,16 +739,26 @@ async function configureApiSettings(settings) {
   console.log();
   
   const apiOptions = [
-    { name: 'Auto (Best Available)', value: 'auto',
-      detail: 'Automatically choose the best available API\nPriority: OpenAI > Google > MyMemory' },
-    { name: apiStatus.hasOpenAI ? 'OpenAI GPT-3.5 ✅' : 'OpenAI GPT-3.5 (Not configured)', 
+    { 
+      name: 'Auto (Best Available)', 
+      value: 'auto',
+      detail: 'Automatically choose the best available API\nPriority: OpenAI > Google > MyMemory' 
+    },
+    { 
+      name: apiStatus.hasOpenAI ? 'OpenAI GPT-3.5 ✅' : 'OpenAI GPT-3.5 (Not configured)', 
       value: 'openai',
-      detail: 'High-quality translations with context awareness\nRequires API key from OpenAI' },
-    { name: apiStatus.hasGoogle ? 'Google Translate ✅' : 'Google Translate (Not configured)', 
+      detail: 'High-quality translations with context awareness\nRequires API key from OpenAI' 
+    },
+    { 
+      name: apiStatus.hasGoogle ? 'Google Translate ✅' : 'Google Translate (Not configured)', 
       value: 'google',
-      detail: 'Professional translation service\nRequires API key from Google Cloud' },
-    { name: 'MyMemory (Free)', value: 'mymemory',
-      detail: 'Free translation service with rate limits\nNo API key required, basic quality' }
+      detail: 'Professional translation service\nRequires API key from Google Cloud' 
+    },
+    { 
+      name: 'MyMemory (Free)', 
+      value: 'mymemory',
+      detail: 'Free translation service with rate limits\nNo API key required, basic quality' 
+    }
   ];
   
   const menu = new DetailedSettingsMenu(
@@ -438,27 +775,32 @@ async function configureApiSettings(settings) {
   await new Promise(resolve => setTimeout(resolve, 1500));
 }
 
-// Configure report settings
-async function configureReportSettings(settings) {
+// Configure report format
+async function configureReportFormat(settings) {
   printHeader();
-  print('📖 REPORT OPENING SETTINGS', 'yellow');
+  print('📄 REPORT FORMAT SETTINGS', 'yellow');
   console.log();
   
-  // Auto-open setting
-  const autoOpenMenu = new SimpleMenu(
-    'Auto-open reports after generation?',
-    [
-      { name: 'Yes, always open reports automatically', value: true },
-      { name: 'No, just show file location', value: false }
-    ]
-  );
+  const options = [
+    { name: 'Markdown only', value: 'markdown' },
+    { name: 'JSON only', value: 'json' },
+    { name: 'Both formats', value: 'both' }
+  ];
   
-  const autoOpen = await autoOpenMenu.show();
-  settings.autoOpenReports = autoOpen.value;
+  const menu = new SimpleMenu('Choose report format:', options);
+  const selected = await menu.show();
   
-  // IDE preference
+  settings.translationReportFormat = selected.value;
+  saveSettings(settings);
+  
+  print(`\n✅ Report format set to: ${selected.name}`, 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure preferred IDE
+async function configurePreferredIDE(settings) {
   printHeader();
-  print('📖 PREFERRED IDE/EDITOR', 'yellow');
+  print('📝 PREFERRED IDE/EDITOR', 'yellow');
   console.log();
   
   const ideOptions = [
@@ -466,18 +808,228 @@ async function configureReportSettings(settings) {
     { name: 'Visual Studio Code', value: 'code' },
     { name: 'Sublime Text', value: 'subl' },
     { name: 'Atom', value: 'atom' },
+    { name: 'WebStorm', value: 'webstorm' },
+    { name: 'IntelliJ IDEA', value: 'intellij' },
+    { name: 'Trae', value: 'trae' },
+    { name: 'Notepad++ (Windows)', value: 'notepad++' },
     { name: 'System default editor', value: process.platform === 'win32' ? 'notepad' : 
-                                            process.platform === 'darwin' ? 'open' : 'xdg-open' }
+                                            process.platform === 'darwin' ? 'open' : 'xdg-open' },
+    { name: 'Custom command', value: 'custom' }
   ];
   
-  const ideMenu = new SimpleMenu('Choose preferred IDE/editor:', ideOptions);
-  const selectedIde = await ideMenu.show();
-  settings.preferredIde = selectedIde.value;
+  const menu = new SimpleMenu('Choose preferred IDE/editor:', ideOptions);
+  const selected = await menu.show();
+  
+  if (selected.value === 'custom') {
+    const customCommand = await askQuestion('Enter custom command: ');
+    settings.preferredIde = customCommand.trim() || 'auto';
+  } else {
+    settings.preferredIde = selected.value;
+  }
   
   saveSettings(settings);
   
-  print('\n✅ Report settings updated!', 'green');
+  print(`\n✅ Preferred IDE set to: ${settings.preferredIde}`, 'green');
   await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure preferred file manager
+async function configurePreferredFileManager(settings) {
+  printHeader();
+  print('📁 PREFERRED FILE MANAGER', 'yellow');
+  console.log();
+  
+  const options = [
+    { name: 'Auto-detect (system default)', value: 'auto' }
+  ];
+  
+  if (process.platform === 'win32') {
+    options.push({ name: 'Windows Explorer', value: 'explorer' });
+  } else if (process.platform === 'darwin') {
+    options.push({ name: 'Finder', value: 'open' });
+  } else {
+    options.push(
+      { name: 'Nautilus (GNOME)', value: 'nautilus' },
+      { name: 'Dolphin (KDE)', value: 'dolphin' },
+      { name: 'Thunar (XFCE)', value: 'thunar' }
+    );
+  }
+  
+  options.push({ name: 'Custom command', value: 'custom' });
+  
+  const menu = new SimpleMenu('Choose preferred file manager:', options);
+  const selected = await menu.show();
+  
+  if (selected.value === 'custom') {
+    const customCommand = await askQuestion('Enter custom command: ');
+    settings.preferredFileManager = customCommand.trim() || 'auto';
+  } else {
+    settings.preferredFileManager = selected.value;
+  }
+  
+  saveSettings(settings);
+  
+  print(`\n✅ Preferred file manager set to: ${settings.preferredFileManager}`, 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure export prefix
+async function configureExportPrefix(settings) {
+  printHeader();
+  print('📝 EXPORT FILE PREFIX', 'yellow');
+  console.log();
+  
+  print(`Current prefix: "${settings.exportFilePrefix}"`, 'cyan');
+  print('Example: export_20250804_1425.txt', 'dim');
+  console.log();
+  
+  const newPrefix = await askQuestion('Enter new prefix (or press Enter to keep current): ');
+  
+  if (newPrefix.trim()) {
+    settings.exportFilePrefix = newPrefix.trim();
+    saveSettings(settings);
+    print(`\n✅ Export prefix set to: "${settings.exportFilePrefix}"`, 'green');
+  } else {
+    print('\n❌ Prefix not changed', 'yellow');
+  }
+  
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure export path
+async function configureExportPath(settings) {
+  printHeader();
+  print('📁 CUSTOM EXPORT PATH', 'yellow');
+  console.log();
+  
+  print(`Current path: ${settings.customExportPath || 'Current directory'}`, 'cyan');
+  console.log();
+  
+  const menu = new SimpleMenu(
+    'Choose export path option:',
+    [
+      { name: 'Use current directory (default)', value: 'current' },
+      { name: 'Enter custom path', value: 'custom' },
+      { name: 'Browse and select', value: 'browse' }
+    ]
+  );
+  
+  const choice = await menu.show();
+  
+  switch (choice.value) {
+    case 'current':
+      settings.customExportPath = '';
+      break;
+    case 'custom':
+      const customPath = await askQuestion('Enter export path: ');
+      if (customPath.trim() && fs.existsSync(customPath.trim())) {
+        settings.customExportPath = customPath.trim();
+      } else {
+        print('\n❌ Invalid path', 'red');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return;
+      }
+      break;
+    case 'browse':
+      const { selectDirectory } = require('./lib/core/fileSystem');
+      const selected = await selectDirectory(process.cwd(), 'Select export directory:');
+      if (selected) {
+        settings.customExportPath = selected;
+      }
+      break;
+  }
+  
+  saveSettings(settings);
+  print(`\n✅ Export path updated`, 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure max files
+async function configureMaxFiles(settings) {
+  printHeader();
+  print('📊 MAXIMUM EXPORT FILES', 'yellow');
+  console.log();
+  
+  print(`Current limit: ${settings.maxExportFiles} files`, 'cyan');
+  console.log();
+  
+  const newLimit = await askQuestion('Enter new limit (10-1000): ');
+  const limit = parseInt(newLimit);
+  
+  if (!isNaN(limit) && limit >= 10 && limit <= 1000) {
+    settings.maxExportFiles = limit;
+    saveSettings(settings);
+    print(`\n✅ Max export files set to: ${settings.maxExportFiles}`, 'green');
+  } else {
+    print('\n❌ Invalid limit. Please enter a number between 10 and 1000.', 'red');
+  }
+  
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure exclude patterns
+async function configureExcludePatterns(settings) {
+  while (true) {
+    printHeader();
+    print('🚫 EXCLUDE PATTERNS', 'yellow');
+    console.log();
+    
+    if (settings.excludePatterns.length > 0) {
+      print('Current patterns:', 'cyan');
+      settings.excludePatterns.forEach((pattern, index) => {
+        print(`  ${index + 1}. ${pattern}`, 'white');
+      });
+      console.log();
+    } else {
+      print('No custom exclude patterns defined.', 'dim');
+      console.log();
+    }
+    
+    const menu = new SimpleMenu(
+      'Manage exclude patterns:',
+      [
+        { name: 'Add pattern', value: 'add' },
+        { name: 'Remove pattern', value: 'remove' },
+        { name: 'Clear all patterns', value: 'clear' },
+        { name: '↩️  Back', value: 'back' }
+      ]
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'add':
+        const pattern = await askQuestion('Enter pattern (e.g., *.log, temp/): ');
+        if (pattern.trim()) {
+          settings.excludePatterns.push(pattern.trim());
+          saveSettings(settings);
+          print(`\n✅ Added pattern: ${pattern.trim()}`, 'green');
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'remove':
+        if (settings.excludePatterns.length > 0) {
+          const removeMenu = new SimpleMenu(
+            'Select pattern to remove:',
+            settings.excludePatterns.map((p, i) => ({ name: p, value: i }))
+          );
+          const toRemove = await removeMenu.show();
+          settings.excludePatterns.splice(toRemove.value, 1);
+          saveSettings(settings);
+          print(`\n✅ Pattern removed`, 'green');
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'clear':
+        settings.excludePatterns = [];
+        saveSettings(settings);
+        print(`\n✅ All patterns cleared`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'back':
+        return;
+    }
+  }
 }
 
 // Reset settings
@@ -495,8 +1047,20 @@ async function resetSettings() {
     const defaultSettings = {
       defaultTranslationApi: 'auto',
       autoOpenReports: true,
-      firstRun: false,
-      preferredIde: 'auto'
+      autoOpenFolder: false,
+      openFolderInsteadOfFile: false,
+      preferredIde: 'auto',
+      preferredFileManager: 'auto',
+      showHiddenFiles: false,
+      excludePatterns: [],
+      customExportPath: '',
+      exportFilePrefix: 'export',
+      maxExportFiles: 50,
+      confirmBeforeDelete: true,
+      translationReportFormat: 'both',
+      autoBackupBeforeSync: true,
+      showDetailedLogs: false,
+      firstRun: false
     };
     
     saveSettings(defaultSettings);
@@ -521,14 +1085,12 @@ async function firstRunSetup() {
   print('This is your first time using the tool. Let\'s get you set up!', 'dim');
   console.log();
   
-  // API Setup
   const setupKeys = await askConfirmMenu('Would you like to setup API keys for better translation quality?');
   
   if (setupKeys) {
     await setupApiKeys();
   }
   
-  // API Selection
   printHeader();
   print('🌐 Choose your preferred translation API:', 'cyan');
   console.log();
@@ -555,19 +1117,16 @@ async function firstRunSetup() {
   return settings;
 }
 
-// Enhanced main menu with better UX
+// Enhanced main menu
 async function mainMenu() {
-  // Load environment and settings
   let env = loadEnvFromInstallDir();
   let settings = await firstRunSetup();
   
-  // Check API keys status
   const apiStatus = checkApiKeysStatus(env);
   
   while (true) {
     printHeader();
     
-    // Show API status tip
     if (!apiStatus.hasAnyKey) {
       print('💡 Tip: Setup API keys in Settings for better translation quality', 'yellow');
       console.log();
@@ -606,16 +1165,14 @@ async function mainMenu() {
         break;
         
       case 'translations':
-        // Reload environment and settings before translation management
         env = loadEnvFromInstallDir();
         settings = loadSettings();
-        const translationManager = new TranslationManager(env, settings, openFileWithIDE);
+        const translationManager = new TranslationManager(env, settings, openFileOrFolder);
         await translationManager.manage();
         break;
         
       case 'settings':
         await showSettingsMenu();
-        // Reload environment after settings change
         env = loadEnvFromInstallDir();
         settings = loadSettings();
         break;
@@ -627,7 +1184,7 @@ async function mainMenu() {
   }
 }
 
-// Enhanced tree creation with folder selection
+// Enhanced tree creation
 async function createFromTreeEnhanced() {
   printHeader();
   print('🌳 CREATE STRUCTURE FROM TREE', 'yellow');
@@ -655,7 +1212,6 @@ async function createFromTreeEnhanced() {
     return;
   }
   
-  // Parse the tree
   const { parseTreeStructure, countTreeItems } = require('./lib/utils/treeParser');
   const structure = parseTreeStructure(treeText);
   
@@ -666,7 +1222,6 @@ async function createFromTreeEnhanced() {
     return;
   }
   
-  // Show parsed structure
   printHeader();
   print('✅ Tree Structure Parsed Successfully!', 'green');
   console.log();
@@ -678,7 +1233,6 @@ async function createFromTreeEnhanced() {
   print(`🔢 Total items: ${counts.total}`, 'cyan');
   console.log();
   
-  // Select destination with enhanced options
   const destinationMenu = new SimpleMenu(
     'Where would you like to create this structure?',
     [
@@ -703,7 +1257,6 @@ async function createFromTreeEnhanced() {
       print('🆕 Create New Parent Folder', 'cyan');
       console.log();
       
-      // Suggest default name based on root folder of tree structure
       const suggestedName = structure[0].name + '_workspace';
       const parentName = await askQuestion(`Enter parent folder name (default: ${suggestedName}): `);
       const finalName = parentName.trim() || suggestedName;
@@ -730,7 +1283,6 @@ async function createFromTreeEnhanced() {
       break;
   }
   
-  // Check if root folder already exists
   const rootPath = path.join(destination, structure[0].name);
   if (fs.existsSync(rootPath)) {
     print(`\n⚠️  Folder "${structure[0].name}" already exists!`, 'yellow');
@@ -740,7 +1292,6 @@ async function createFromTreeEnhanced() {
     }
   }
   
-  // Final confirmation
   printHeader();
   print('📋 Ready to Create Structure', 'cyan');
   console.log();
@@ -757,7 +1308,6 @@ async function createFromTreeEnhanced() {
     return;
   }
   
-  // Create the structure
   printHeader();
   print('🔄 Creating folder structure...', 'yellow');
   
@@ -770,21 +1320,14 @@ async function createFromTreeEnhanced() {
     print(`📄 Created ${stats.files} files`, 'cyan');
     print(`📍 Location: ${rootPath}`, 'cyan');
     
-    // Ask if user wants to open the folder
     console.log();
-    const openFolder = await askConfirmMenu('Would you like to open the created folder?');
+    const settings = loadSettings();
     
-    if (openFolder) {
-      const { exec } = require('child_process');
-      if (process.platform === 'win32') {
-        // Windows: Use explorer to open folder
-        exec(`explorer "${rootPath.replace(/\//g, '\\')}"`);
-      } else if (process.platform === 'darwin') {
-        // macOS
-        exec(`open "${rootPath}"`);
-      } else {
-        // Linux
-        exec(`xdg-open "${rootPath}"`);
+    if (settings.openFolderInsteadOfFile || settings.autoOpenFolder) {
+      const openFolder = await askConfirmMenu('Would you like to open the created folder?');
+      
+      if (openFolder) {
+        await openFolderWithExplorer(rootPath, settings);
       }
     }
   } catch (error) {
@@ -794,7 +1337,7 @@ async function createFromTreeEnhanced() {
   await new Promise(resolve => setTimeout(resolve, 2000));
 }
 
-// Enhanced exit with confirmation
+// Fixed exit program
 async function exitProgram() {
   printHeader();
   print('👋 Thank you for using Project Tool!', 'green');
@@ -809,20 +1352,20 @@ async function exitProgram() {
     print('Goodbye! 👋', 'yellow');
     process.exit(0);
   }
+  // If not confirmed, return to main menu (function will return naturally)
 }
 
-// Enhanced main function with better error handling
+// Enhanced main function
 async function main() {
   const args = process.argv.slice(2);
   
-  // Handle command line arguments
   if (args.includes('--help') || args.includes('-h')) {
     showHelp();
     process.exit(0);
   }
   
   if (args.includes('--version') || args.includes('-v')) {
-    console.log('4.2.1');
+    console.log('4.3.0');
     process.exit(0);
   }
   
@@ -831,11 +1374,10 @@ async function main() {
     process.exit(0);
   }
   
-  // Quick commands for translation
   if (args.includes('--sync') || args.includes('--check')) {
     const env = loadEnvFromInstallDir();
     const settings = loadSettings();
-    const translationManager = new TranslationManager(env, settings, openFileWithIDE);
+    const translationManager = new TranslationManager(env, settings, openFileOrFolder);
     
     if (args.includes('--sync')) {
       await translationManager.quickSync();
@@ -858,10 +1400,10 @@ async function main() {
   }
 }
 
-// Show help information
+// Show help
 function showHelp() {
   console.log(`
-Project Tool v4.2.1 - Enhanced Export/Import & Translation Manager
+Project Tool v4.3.0 - Enhanced Export/Import & Translation Manager
 ================================================================
 
 USAGE:
@@ -881,6 +1423,7 @@ FEATURES:
   🌐 Translations      Full translation synchronization with AI
   🏗️ Translation Setup  Create i18n structure for new projects
   🔑 API Integration   OpenAI and Google Translate support
+  ⚙️ Extended Settings  Comprehensive customization options
 
 INTERACTIVE MODE:
   Run without options to enter interactive mode with full menu
