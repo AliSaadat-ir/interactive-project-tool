@@ -1,0 +1,55 @@
+# Project Tool Ignore File
+# This file is used to specify patterns for files/folders to ignore during scanning
+# It works similarly to .gitignore but is specific to the project tool
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.cache
+
+# Ignore log files
+*.log
+logs/
+
+# Ignore backup files
+*.backup
+*.bak
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore build outputs
+dist/
+build/
+out/
+
+# Ignore dependencies
+node_modules/
+vendor/
+packages/
+
+# Ignore environment files
+.env
+.env.local
+.env.production
+
+# Ignore test coverage
+coverage/
+.nyc_output/
+
+# Custom patterns for your project
+# Add your specific patterns below:
+# example: ignore all files in temp directory
+temp/
+# example: ignore all .test.js files
+*.test.js
+# example: ignore specific file
+config/secrets.json

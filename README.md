@@ -1,15 +1,17 @@
-# Interactive Project Tool v4.3
+# Interactive Project Tool v4.4
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-4.3.0-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-green.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+![GitHub Release](https://img.shields.io/github/v/release/AliSaadat-ir/interactive-project-tool?style=for-the-badge&color=blue)
+![Downloads](https://img.shields.io/github/downloads/AliSaadat-ir/interactive-project-tool/total?style=for-the-badge&color=green)
+![Stars](https://img.shields.io/github/stars/AliSaadat-ir/interactive-project-tool?style=for-the-badge&color=yellow)
+![License](https://img.shields.io/github/license/AliSaadat-ir/interactive-project-tool?style=for-the-badge&color=green)
+![Node Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen?style=for-the-badge&logo=node.js)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)
 
-**A powerful command-line tool that combines project export/import capabilities with advanced translation management, designed for seamless collaboration with AI assistants like Claude AI.**
+**🚀 A powerful CLI tool that revolutionizes project management by combining export/import capabilities with advanced translation management, designed for seamless AI collaboration.**
 
-[Features](#-key-features) • [Installation](#-installation) • [Usage](#-usage) • [Translation Management](#-translation-management) • [Settings](#-settings) • [Examples](#-examples)
+[✨ Features](#-key-features) • [📦 Installation](#-installation) • [🎮 Usage](#-usage) • [🌐 Translation](#-translation-management) • [⚙️ Settings](#-settings) • [🤖 AI Integration](#-claude-ai-integration) • [💡 Examples](#-examples--workflows)
 
 </div>
 
@@ -17,557 +19,524 @@
 
 ## 🎯 Key Features
 
-### 📤📥 **Project Export/Import**
-- **Export Projects**: Convert your entire project into a single file for easy sharing
-- **Import Projects**: Restore projects with advanced directory selection and management
-- **Smart Filtering**: Automatic exclusion of unnecessary files with customizable patterns
-- **Gitignore Support**: Option to use .gitignore patterns for intelligent filtering
-- **Cross-Platform**: Works seamlessly on Windows, macOS, and Linux
+### 📤📥 **Advanced Project Export/Import**
+<details>
+<summary>Click to expand details</summary>
 
-### 🌳 **Structure Creation**
-- **Tree to Structure**: Create folder/file structures from tree diagrams
-- **Paste and Create**: Simply paste ASCII tree structures and generate real folders/files
-- **Flexible Destinations**: Choose where to create structures with multiple options
-- **Workspace Generation**: Auto-suggest workspace names based on project structure
+- **Smart Export**: Convert entire projects to single shareable files
+- **Intelligent Import**: Advanced directory selection with preview
+- **Custom Filtering**: Use `.projecttoolignore` for project-specific patterns
+- **Gitignore Support**: Option to inherit patterns from `.gitignore`
+- **Timestamped Files**: Full date/time with seconds for precise tracking
+- **Cross-Platform**: Seamless operation on Windows, macOS, and Linux
+</details>
 
-### 🗑️ **File Management**
-- **Export File Manager**: Clean up accumulated export files with ease
-- **Batch Operations**: Select multiple files with intuitive Space key selection
-- **Smart Filtering**: Automatically shows only relevant export files
-- **Time Stamps**: Full date/time display for better file organization
-- **Safe Deletion**: Multiple confirmation levels to prevent accidental deletions
+### 🌳 **Tree Structure Creation**
+<details>
+<summary>Click to expand details</summary>
 
-### 🌐 **Advanced Translation Management**
-- **Complete i18n Setup**: Create translation structure for projects without existing setup
-- **14 Language Support**: English, Arabic, Spanish, French, German, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Hindi, Persian, Urdu
-- **Smart Detection**: Auto-detect translation usage including optional chaining (t?.key)
-- **AI-Powered Translation**: Integration with OpenAI GPT-3.5 and Google Translate
-- **Advanced Conflict Resolution**: 
-  - Smart grouping of similar texts regardless of quotes
-  - Key renaming for different variations
-  - Save/discard options during conflict resolution
-  - Progress tracking with exit capabilities
-- **Synchronization**: Keep all language files perfectly in sync
-- **TypeScript Support**: Auto-generate and update TypeScript type definitions
-- **Detailed Reports**: Generate comprehensive analysis in multiple formats (Markdown, HTML, JSON, CSV)
+- **ASCII to Reality**: Transform text diagrams into actual folder structures
+- **Smart Parsing**: Handles complex nested structures with various formats
+- **Workspace Creation**: Auto-generate parent workspace folders
+- **Validation**: Preview structure before creation
+- **Flexible Destinations**: Choose exact location with browsing
+</details>
 
-### ⚙️ **Extended Settings & Customization**
-- **Comprehensive Settings Menu**: Organized into categories for easy navigation
-  - Translation Settings: API preferences, report formats, auto-backup
-  - File & Folder Settings: IDE preferences, file manager options, open behavior
-  - Export/Import Settings: Custom paths, prefixes, exclusion patterns
-  - Display Settings: Verbosity and logging preferences
-- **IDE Integration**: 
-  - Smart detection of running IDEs with priority-based file opening
-  - Support for Trae editor and custom commands
-  - Choose between opening files or containing folders
-- **File Manager Options**: Configure preferred file managers for folder browsing
-- **Export Customization**: 
-  - Custom export paths and file prefixes
-  - Maximum file limits with auto-cleanup
-  - Custom exclusion patterns
-- **Persistent Settings**: All preferences saved between sessions
+### 🗑️ **Advanced File Management**
+<details>
+<summary>Click to expand details</summary>
+
+- **Export File Manager**: Clean up accumulated export files efficiently
+- **Batch Operations**: Multi-select with Space key, select all with 'A'
+- **Smart Filtering**: Auto-filters to show only relevant export files
+- **Full Timestamps**: Complete date/time display with seconds
+- **Safe Deletion**: Multiple confirmation levels prevent accidents
+- **Auto-cleanup**: Set maximum file limits with automatic rotation
+</details>
+
+### 🌐 **Revolutionary Translation Management**
+<details>
+<summary>Click to expand details</summary>
+
+- **Complete i18n Setup**: Create translation infrastructure from scratch
+- **14 Language Support**: EN, AR, ES, FR, DE, IT, PT, RU, ZH, JA, KO, HI, FA, UR
+- **Smart Pattern Detection**: Including optional chaining (`t?.key`)
+- **AI-Powered Translation**: OpenAI GPT-3.5, Google Translate, MyMemory
+- **Advanced Conflict Resolution**:
+  - Intelligent text grouping regardless of quote types
+  - Dynamic key renaming for variations
+  - Save/exit at any point with Ctrl+C
+  - Progress tracking and state persistence
+  - Automatic file updates with new keys
+- **Perfect Synchronization**: Keep all language files in sync
+- **TypeScript Support**: Auto-generate and maintain type definitions
+- **Professional Reports**: HTML, Markdown, JSON, CSV formats
+</details>
+
+### ⚙️ **Comprehensive Settings System**
+<details>
+<summary>Click to expand details</summary>
+
+- **Categorized Settings**: Organized menu for easy navigation
+- **IDE Integration**: Support for VS Code, Sublime, Atom, WebStorm, Trae
+- **File Manager Options**: Configure preferred folder browsers
+- **Export Customization**: Custom paths, prefixes, patterns
+- **Translation Settings**: API preferences, report formats, backups
+- **Display Options**: Verbosity, progress bars, themes
+- **Persistent Configuration**: All settings saved between sessions
+</details>
 
 ### 🤖 **AI Assistant Integration**
-- **Claude AI Optimized**: Perfect for collaboration with Claude AI
-- **Export Format**: Specially designed export format for AI code analysis
-- **Import Workflow**: Seamlessly import AI-generated code modifications
-- **Structured Output**: Clean, parseable format for AI understanding
+<details>
+<summary>Click to expand details</summary>
+
+- **Claude AI Optimized**: Designed for AI collaboration
+- **Structured Export**: Special format for AI analysis
+- **Seamless Import**: Direct import of AI modifications
+- **Clean Output**: No metadata or unnecessary formatting
+</details>
 
 ---
 
-## 🚀 Installation
+## 📊 Workflow Diagrams
 
-### Method 1: Clone and Install (Recommended)
+### Translation Conflict Resolution Flow
+```mermaid
+graph TD
+    A[Scan Project] --> B{Conflicts Found?}
+    B -->|Yes| C[Show Conflicts Count]
+    B -->|No| D[Continue to Menu]
+    C --> E[Resolve Each Conflict]
+    E --> F{Resolution Type}
+    F -->|Select Text| G[Apply to All Locations]
+    F -->|Change Keys| H[Select Variations]
+    F -->|Custom Text| I[Enter New Text]
+    F -->|Skip| J[Use First Found]
+    H --> K[Assign New Keys]
+    K --> L[Update Files]
+    G --> M{More Conflicts?}
+    I --> M
+    J --> M
+    L --> M
+    M -->|Yes| E
+    M -->|No| N[Save & Complete]
+    
+    style A fill:#e1f5fe
+    style N fill:#c8e6c9
+    style F fill:#fff9c4
+```
 
+### Export/Import Process
+```mermaid
+graph LR
+    A[Select Project] --> B[Choose Filters]
+    B --> C{Use .gitignore?}
+    C -->|Yes| D[Apply Patterns]
+    C -->|No| E[Default Filters]
+    D --> F[Generate Export]
+    E --> F
+    F --> G[Timestamped File]
+    G --> H[Share with AI]
+    H --> I[AI Processes]
+    I --> J[Import Response]
+    J --> K[Select Destination]
+    K --> L[Create Structure]
+    
+    style A fill:#e1f5fe
+    style H fill:#fff9c4
+    style L fill:#c8e6c9
+```
+
+---
+
+## 📦 Installation
+
+### Method 1: NPM Global Install (Recommended)
 ```bash
-# Clone the repository
+npm install -g interactive-project-tool
+
+# Verify installation
+project-tool --version
+```
+
+### Method 2: From Source
+```bash
+# Clone repository
 git clone https://github.com/AliSaadat-ir/interactive-project-tool.git
 cd interactive-project-tool
 
 # Install globally
 npm install -g .
 
-# Run the tool
+# Run
 project-tool
 ```
 
-### Method 2: Direct Download
-
-```bash
-# Download latest release
-curl -L https://github.com/AliSaadat-ir/interactive-project-tool/archive/v4.3.0.tar.gz | tar xz
-cd interactive-project-tool-4.3.0
-
-# Install globally
-npm install -g .
-```
-
-### Method 3: Development Setup
-
+### Method 3: Development Mode
 ```bash
 # Clone for development
 git clone https://github.com/AliSaadat-ir/interactive-project-tool.git
 cd interactive-project-tool
 
-# Run directly (no global install)
+# Run directly without global install
 node index.js
 
-# Or make executable and run
+# Or make executable
 chmod +x index.js
 ./index.js
 ```
 
-### Requirements
-
+### System Requirements
 - **Node.js**: 14.0.0 or higher
-- **NPM**: Included with Node.js
-- **Operating System**: Windows 10+, macOS 10.14+, or Linux (Ubuntu 18.04+, CentOS 7+)
+- **NPM**: 6.0.0 or higher
+- **OS**: Windows 10+, macOS 10.14+, Linux (Ubuntu 18.04+)
+- **Terminal**: Any modern terminal with UTF-8 support
 
 ---
 
-## 📖 Usage
+## 🎮 Usage
 
-### Basic Commands
-
+### Command Line Interface
 ```bash
 # Interactive mode (default)
 project-tool
 
-# Show help
-project-tool --help
-project-tool -h
-
-# Show version
-project-tool --version
-project-tool -v
-
-# Setup or update API keys
-project-tool --setup
-
-# Quick translation commands
-project-tool --sync    # Sync all translation files
-project-tool --check   # Check translation consistency
-```
-
-### First Run
-
-On first run, Project Tool will guide you through:
-
-1. **Welcome Screen**: Introduction to the tool
-2. **API Key Setup**: Optional setup of translation APIs
-3. **Default Preferences**: Choose default translation API
-4. **Settings Confirmation**: Review and confirm initial settings
-
-You can skip any step and configure later through the Settings menu.
-
----
-
-## 🎮 Interactive Menus
-
-### Main Menu
-
-```
-🚀 What would you like to do today?
-  ▶ 1. 📤 Export Project to File
-    2. 📥 Import Project from File
-    3. 🌳 Create Structure from Tree Diagram
-    4. 🗑️  Manage Export Files
-    5. 🌐 Manage Translations (Advanced)
-    6. ⚙️  Settings
-    7. ❌ Exit
+# Quick commands
+project-tool --help         # Show help
+project-tool --version      # Show version
+project-tool --setup        # Setup API keys
+project-tool --sync         # Sync translations
+project-tool --check        # Check consistency
 ```
 
 ### Navigation Controls
-
-| Key | Action |
-|-----|--------|
-| ↑ ↓ | Navigate menu items |
-| 1-9 | Quick select by number |
-| Enter | Confirm selection |
-| Space | Toggle selection (in multi-select menus) |
-| A | Select/deselect all (in multi-select menus) |
-| Ctrl+C | Exit application (with save options in conflicts) |
-
----
-
-## 📤 Export/Import Workflow
-
-### Export Process
-
-1. **Select Directory**: Navigate and choose project folder to export
-2. **Gitignore Option**: Choose whether to use .gitignore patterns
-3. **Processing**: Tool scans and processes all relevant files
-4. **Output**: Generates timestamped export file with custom prefix
-
-#### Export Settings:
-- **Custom Export Path**: Define default export location
-- **File Prefix**: Customize export file naming (default: "export")
-- **Exclusion Patterns**: Add custom patterns to exclude files/folders
-- **Auto-cleanup**: Set maximum number of export files to keep
-
-### Import Process
-
-1. **File Selection**: Choose export file from filtered list
-2. **Destination Choice**: 
-   - Use current directory
-   - Create new folder (with custom name)
-   - Browse and select existing directory
-3. **Confirmation**: Review import settings
-4. **Processing**: Extract and recreate project structure
-
----
-
-## 🌳 Tree Structure Creation
-
-Create complex folder structures from simple text diagrams:
-
-### Input Example:
-```
-my-fullstack-app
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   ├── auth.controller.js
-│   │   │   └── user.controller.js
-│   │   ├── models/
-│   │   │   └── user.model.js
-│   │   ├── routes/
-│   │   │   └── api.routes.js
-│   │   └── app.js
-│   ├── package.json
-│   └── .env.example
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Header.jsx
-│   │   │   └── Footer.jsx
-│   │   ├── pages/
-│   │   │   └── Home.jsx
-│   │   └── App.jsx
-│   └── package.json
-├── shared/
-│   └── types.ts
-└── README.md
-DONE
-```
-
-### Features:
-- **Smart Parsing**: Handles various tree drawing characters
-- **File Detection**: Automatically detects files vs directories
-- **Workspace Creation**: Option to create parent workspace folder
-- **Folder Opening**: Option to open created folder with preferred file manager
+| Key | Action | Context |
+|-----|--------|---------|
+| ↑ ↓ | Navigate menu | All menus |
+| 1-9 | Quick select | Numbered items |
+| Enter | Confirm | All menus |
+| Space | Toggle selection | Multi-select |
+| A | Select/deselect all | Multi-select |
+| Ctrl+C | Save & Exit options | Conflict resolution |
+| Esc | Back/Cancel | Sub-menus |
 
 ---
 
 ## 🌐 Translation Management
 
-### Enhanced Translation Patterns
-
-The tool now detects even more translation patterns:
+### Pattern Detection
+The tool detects all modern JavaScript/TypeScript translation patterns:
 
 ```javascript
 // Standard patterns
 t.welcomeMessage
-t['welcomeMessage']
-t["nav.home"]
+t['userProfile']
+t["navigation.home"]
 
-// Optional chaining (NEW)
+// Optional chaining (ES2020+)
 t?.welcomeMessage
 t?.['userProfile']
 t?.nav?.home
 
-// With fallback text
+// With fallback text (source of truth)
 t.welcomeMessage || 'Welcome to our app'
 {t?.loadingMessage || 'Loading...'}
 
 // Vue.js style
 $t.welcomeMessage
-$t('nav.home')
+$t('navigation.home')
 
-// Function calls
+// Function patterns
 translation('welcomeMessage')
 translate('nav.home')
 ```
 
 ### Advanced Conflict Resolution
 
-When translation keys have different fallback texts:
+#### State Persistence
+- **Auto-save**: Progress saved after each resolution
+- **Resume**: Continue from where you left off
+- **Session Management**: 1-hour session timeout
 
-1. **Conflict Detection**: Automatically identifies keys with multiple variations
-2. **Smart Display**: Shows conflict count before resolution
-3. **Resolution Options**:
-   - Select preferred text for all occurrences
-   - **Change keys for different texts** (NEW)
-   - Enter custom text
-   - Skip specific conflicts
-4. **Key Renaming**: 
-   - Select which text variations need different keys
-   - Choose from auto-generated suggestions (key1, key2, keyAlt, etc.)
-   - Enter custom key names
-5. **Save/Exit Options**: 
-   - Save changes and exit anytime with Ctrl+C
-   - Discard changes and exit
-   - Continue resolving conflicts
+#### Resolution Options
+1. **Select Preferred Text**: Apply to all occurrences
+2. **Change Keys**: Assign different keys to variations
+3. **Custom Text**: Enter your own translation
+4. **Skip**: Use first found text
+
+#### Key Renaming Flow
+```
+Original: loginToContinue
+Conflicts: 
+  - "Please log in to continue" (3 locations)
+  - "Login required to continue" (2 locations)
+
+Resolution:
+  - loginToContinue → "Please log in to continue"
+  - loginToContinueAlt → "Login required to continue"
+```
 
 ### Translation Reports
 
-Generate comprehensive reports in multiple formats:
+#### HTML Report Features
+- **Interactive Dashboard**: Health score visualization
+- **Progress Bars**: Visual coverage per language
+- **Priority Recommendations**: Color-coded action items
+- **Usage Statistics**: Most/least used keys
+- **Export Options**: Print or save as PDF
 
-- **Markdown**: Human-readable report with recommendations
-- **HTML**: Interactive web report with charts and progress bars
-- **JSON**: Machine-readable data for integration
-- **CSV**: Data export for analysis in spreadsheets
-
-#### Report Features:
-- Health score (0-100) based on translation completeness
-- Executive summary with key metrics
-- Language-specific quality ratings
-- Usage statistics for most/least used keys
-- Prioritized recommendations
-- Visual progress charts
-- Quick action commands
+#### Report Formats
+| Format | Use Case | Features |
+|--------|----------|----------|
+| HTML | Visual analysis | Charts, interactive |
+| Markdown | Documentation | Human-readable |
+| JSON | Integration | Machine-readable |
+| CSV | Spreadsheets | Data analysis |
 
 ---
 
-## ⚙️ Extended Settings
+## ⚙️ Settings
 
 ### Settings Categories
 
 #### 🌐 Translation Settings
-- **Default Translation API**: Auto, OpenAI, Google, or MyMemory
-- **Report Format**: Choose between Markdown, JSON, or both
-- **Auto-backup**: Enable automatic backup before sync operations
+```javascript
+{
+  "defaultTranslationApi": "auto",    // auto, openai, google, mymemory
+  "translationReportFormat": "both",   // markdown, json, both
+  "autoBackupBeforeSync": true,        // Backup before sync
+  "openHtmlInBrowser": true           // Auto-open HTML reports
+}
+```
 
 #### 📂 File & Folder Settings
-- **Auto-open Reports**: Automatically open generated reports
-- **Open Folder Instead**: Open containing folder instead of file
-- **Preferred IDE**: Set default editor (supports Trae and custom commands)
-- **Preferred File Manager**: Configure folder browser
-- **Show Hidden Files**: Toggle hidden file visibility
+```javascript
+{
+  "autoOpenReports": true,            // Open reports after generation
+  "openFolderInsteadOfFile": false,   // Open containing folder
+  "preferredIde": "auto",             // auto, code, subl, atom, trae
+  "preferredFileManager": "auto",     // auto, explorer, finder
+  "showHiddenFiles": false,           // Show hidden files in browser
+  "useProjectToolIgnore": true        // Use .projecttoolignore
+}
+```
 
 #### 📤 Export/Import Settings
-- **Export File Prefix**: Customize export file naming
-- **Custom Export Path**: Set default export location
-- **Max Export Files**: Limit number of kept export files
-- **Confirm Before Delete**: Toggle deletion confirmations
-- **Exclude Patterns**: Add custom exclusion patterns
-
-#### 🎨 Display Settings
-- **Show Detailed Logs**: Enable verbose output during operations
-
-### IDE Detection & Priority
-
-The tool uses intelligent IDE detection:
-
-1. **Currently Running IDEs**: Highest priority (auto-detected)
-2. **User Preference**: Your configured preferred editor
-3. **Common IDEs**: Platform-specific common editors
-4. **System Default**: Fallback to system default editor
-
-Supported IDEs:
-- Visual Studio Code
-- Sublime Text
-- Atom
-- WebStorm/PhpStorm/IntelliJ
-- **Trae** (NEW)
-- Notepad++ (Windows)
-- Custom commands
+```javascript
+{
+  "customExportPath": "",             // Default export location
+  "exportFilePrefix": "export",       // Export file prefix
+  "maxExportFiles": 50,               // Auto-cleanup limit
+  "confirmBeforeDelete": true,        // Deletion confirmations
+  "excludePatterns": []               // Custom exclusion patterns
+}
+```
 
 ---
 
-## 🤖 Using with Claude AI
+## 🤖 Claude AI Integration
 
-### Perfect Integration Workflow
+### Optimized Workflow
 
-1. **Export Your Project**:
+#### 1. Export Your Project
 ```bash
 project-tool
 > Export Project
-> Select your project directory
-> Choose gitignore usage
-# Generates: export_20250804_1425.txt (or custom prefix)
+> Select directory
+> Choose .gitignore usage
+# Creates: export_20250804_142532.txt
 ```
 
-2. **Share with Claude AI**:
-Upload the export file and use this optimized prompt:
-
+#### 2. Claude AI Prompt
 ```text
-You are a code-export assistant that produces a single text file summarizing project structure and code contents. 
+You are a code-export assistant that produces a single text file summarizing 
+project structure and code contents.
 
 Output requirements:
-1. For each included file (extensions: .js, .jsx, .ts, .tsx, .css, .scss, .html, .json, .md, .config.js, .babelrc, and dotfiles), insert:
+1. For each included file, insert:
    // File: relative/path/to/file
    (then the entire content of that file)
 
-2. After listing all files, insert:
+2. After all files, insert:
    // === Folder Tree ===
    Then a tree diagram using ASCII markers
 
-3. Excluded: node_modules, .git, dist, build, .next, .vscode, .gitignore, package-lock.json
+3. Excluded: node_modules, .git, dist, build, .next, .vscode, 
+   .gitignore, package-lock.json
 
 4. Output must be plain text in one file, no additional commentary.
 
-Please analyze and suggest improvements for this codebase.
+Please analyze this codebase and suggest improvements.
 ```
 
-3. **Import Claude's Response**:
+#### 3. Import Claude's Response
 ```bash
 project-tool
 > Import Project
 > Select Claude's response file
-> Choose destination (create new folder recommended)
-> Confirm import
+> Create new folder (recommended)
+> Confirm and import
 ```
 
 ---
 
-## 📊 Examples & Use Cases
+## 💡 Examples & Workflows
 
-### 1. Translation Management with Conflicts
-
+### Complete Translation Setup
 ```bash
-# Scan project and resolve conflicts
+# For new project without i18n
+project-tool
+> Manage Translations
+> Create Translation Structure
+> Select languages (Space to toggle)
+> Choose location (lib/translations)
+> Confirm creation
+
+# Result:
+lib/translations/
+├── index.ts
+├── types.ts
+└── languages/
+    ├── en.ts
+    ├── ar.ts
+    ├── es.ts
+    └── fr.ts
+```
+
+### Conflict Resolution with State
+```bash
+# Start resolution
 project-tool
 > Manage Translations
 > Scan Project
-# Shows: "Found 5 keys with conflicts"
+# Found 5 conflicts
+
 > Resolve conflicts
-# For each conflict:
-# - Choose preferred text
-# - OR change keys for variations
-# - OR enter custom text
-```
+# Resolve 3 conflicts
 
-### 2. Custom Export Configuration
+# Press Ctrl+C
+> Save progress and exit
 
-```bash
-# Configure export settings
-project-tool
-> Settings
-> Export/Import Settings
-> Export file prefix: "backup"
-> Custom export path: "/backups/projects"
-> Max export files: 30
-# Now exports will use: backup_20250804_1425.txt
-```
-
-### 3. Report Generation & Analysis
-
-```bash
-# Generate comprehensive reports
+# Later...
 project-tool
 > Manage Translations
-> Generate Report
-# Creates:
-# - translation-report.md (human-readable)
-# - translation-report.html (interactive)
-# - translation-report.json (data)
-# - translation-report.csv (analysis)
+> Resolve conflicts
+# Continues from conflict 4 of 5
 ```
 
-### 4. IDE Integration
+### Custom Ignore Patterns
+Create `.projecttoolignore`:
+```gitignore
+# Custom patterns for project tool
+*.test.js
+*.spec.ts
+__tests__/
+coverage/
+*.log
+temp/
+.env.local
+.env.production
 
+# Specific files
+config/secrets.json
+data/private/
+```
+
+### Batch Export Cleanup
 ```bash
-# Configure IDE preferences
 project-tool
-> Settings
-> File & Folder Settings
-> Preferred IDE: trae
-> Open folder instead of file: Enabled
-# Now reports open in Trae, showing folder view
+> Manage Export Files
+> Delete Multiple Files
+# Press 'A' to select all old files
+# Or Space to select specific files
+> Confirm deletion
 ```
 
 ---
 
 ## 🔧 Advanced Configuration
 
-### Environment Variables
-
-The tool uses a dedicated .env file in the installation directory:
+### Environment Setup
+The tool uses a dedicated `.env` file in the installation directory:
 
 ```bash
-# Installation directory: ~/.npm-global/lib/node_modules/project-tool/.env
-OPENAI_API_KEY=sk-your-openai-key-here
-GOOGLE_TRANSLATE_API_KEY=your-google-key-here
+# Location varies by installation method
+~/.npm-global/lib/node_modules/project-tool/.env
+# or
+/usr/local/lib/node_modules/project-tool/.env
+
+# Content:
+OPENAI_API_KEY=sk-your-key-here
+GOOGLE_TRANSLATE_API_KEY=your-google-key
 ```
 
-### Settings File
-
-User preferences are stored in `settings.json`:
-
-```json
+### Custom IDE Commands
+```javascript
+// In settings
 {
-  "defaultTranslationApi": "auto",
-  "autoOpenReports": true,
-  "openFolderInsteadOfFile": false,
-  "preferredIde": "trae",
-  "preferredFileManager": "explorer",
-  "showHiddenFiles": false,
-  "excludePatterns": ["*.log", "temp/"],
-  "customExportPath": "/backups",
-  "exportFilePrefix": "project-backup",
-  "maxExportFiles": 50,
-  "confirmBeforeDelete": true,
-  "translationReportFormat": "both",
-  "autoBackupBeforeSync": true,
-  "showDetailedLogs": false,
-  "firstRun": false
+  "preferredIde": "/usr/local/bin/my-editor"
 }
 ```
+
+### API Priority System
+1. **User Preference**: Your configured default
+2. **Auto Selection**: OpenAI → Google → MyMemory
+3. **Fallback**: Always falls back to free API
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Common Issues & Solutions
 
-#### Translation Conflicts Not Saving
-
-**Problem**: Changes made during conflict resolution are lost
-**Solution**: Use Ctrl+C during resolution and select "Save changes and exit"
-
-#### IDE Not Detected
-
-**Problem**: Trae or custom IDE not opening files
+#### Translation Conflicts Persist
+**Problem**: Conflicts reappear after resolution
 **Solution**: 
+- Ensure you're not skipping conflicts
+- Check that files have write permissions
+- Clear state with: `rm .translation-conflicts-state.json`
+
+#### IDE Not Opening Files
+**Problem**: Files don't open in preferred editor
+**Solution**:
 ```bash
 # Add to PATH or use full path
-project-tool > Settings > File & Folder Settings
-> Preferred IDE: /usr/local/bin/trae
+project-tool > Settings > File Settings
+> Preferred IDE: /full/path/to/editor
 ```
 
-#### Export Files Accumulating
+#### Export Files Not Found
+**Problem**: Import can't find export files
+**Solution**: Files must have "export" in name and .txt extension
 
-**Problem**: Too many export files in directory
-**Solution**: Set max export files limit in settings or use cleanup feature
-
-#### Reports Not Opening
-
-**Problem**: Generated reports don't open automatically
-**Solution**: Enable auto-open in settings or check IDE configuration
+#### Module Not Found Errors
+**Problem**: `Cannot find module '../date'`
+**Solution**: Update to latest version or reinstall
 
 ### Debug Mode
-
-For detailed debugging:
-
 ```bash
-# Enable detailed logs in settings
+# Enable verbose logging
 project-tool > Settings > Display Settings
 > Show detailed logs: Enabled
 
-# Or run with Node.js debug
-DEBUG=* project-tool
+# Or with Node.js debug
+DEBUG=* node index.js
 ```
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome contributions! Areas for improvement:
+
+### Priority Areas
+- **Translation APIs**: Add DeepL, Microsoft Translator
+- **IDE Support**: Add support for more editors
+- **Pattern Detection**: Support for more frameworks
+- **Performance**: Optimize for very large projects
+- **Testing**: Comprehensive test suite needed
 
 ### Development Setup
-
 ```bash
 # Fork and clone
 git clone https://github.com/your-username/interactive-project-tool.git
@@ -577,25 +546,15 @@ cd interactive-project-tool
 git checkout -b feature/amazing-feature
 
 # Make changes and test
-node index.js
+npm test  # Coming soon
 
-# Commit and push
-git commit -m "Add amazing feature"
+# Submit PR
 git push origin feature/amazing-feature
 ```
 
-### Areas for Contribution
-
-- **Translation APIs**: Add support for more translation services
-- **IDE Integration**: Add support for more editors
-- **Conflict Resolution**: Enhance key renaming algorithms
-- **Report Formats**: Add more visualization options
-- **File Types**: Support for more programming languages
-- **Testing**: Add comprehensive test suite
-
 ---
 
-## 📄 License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -603,38 +562,43 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-### Quick Support
-
-- **Version Check**: `project-tool --version`
-- **Help Menu**: `project-tool --help`
-- **Settings Reset**: Settings → Reset to Defaults
+### Quick Links
+- 📋 [GitHub Issues](https://github.com/AliSaadat-ir/interactive-project-tool/issues)
+- 💬 [Discussions](https://github.com/AliSaadat-ir/interactive-project-tool/discussions)
+- 📚 [Wiki](https://github.com/AliSaadat-ir/interactive-project-tool/wiki)
+- 🐛 [Bug Reports](https://github.com/AliSaadat-ir/interactive-project-tool/issues/new?template=bug_report.md)
+- ✨ [Feature Requests](https://github.com/AliSaadat-ir/interactive-project-tool/issues/new?template=feature_request.md)
 
 ### Community
-
-- **GitHub Issues**: [Bug reports and feature requests](https://github.com/AliSaadat-ir/interactive-project-tool/issues)
-- **GitHub Discussions**: [Questions and community support](https://github.com/AliSaadat-ir/interactive-project-tool/discussions)
-- **Repository**: [Source code and documentation](https://github.com/AliSaadat-ir/interactive-project-tool)
+- Star the project to show support
+- Share your use cases in Discussions
+- Contribute translations for more languages
 
 ---
 
-## 🔄 Changelog Highlights
+## 🔄 Latest Updates (v4.4.0)
 
-### v4.3.0 (Latest)
-- ✨ **Enhanced Conflict Resolution**: Key renaming, save/exit options, progress tracking
-- ✨ **Extended Settings**: Comprehensive categorized settings menu
-- ✨ **IDE Support**: Added Trae editor, folder opening options
-- ✨ **Export Customization**: Custom paths, prefixes, auto-cleanup
-- ✨ **Advanced Reports**: HTML and CSV formats with health scores
-- 🐛 **Fixed**: Exit confirmation now properly returns to menu
-- 🔧 **Improved**: Better optional chaining detection (t?.key)
+### 🎉 Major Enhancements
+- ✨ **State Persistence**: Save/resume conflict resolution anytime
+- ✨ **Custom Ignore**: `.projecttoolignore` for project-specific patterns
+- ✨ **Enhanced Reports**: HTML reports with browser auto-open
+- ✨ **Better Timestamps**: Full date/time with seconds
+- 🐛 **Fixed**: Path resolution in types.js
+- 🐛 **Fixed**: Persistent conflicts after resolution
+- 🔧 **Improved**: Settings now properly loaded everywhere
 
-[View Full Changelog](CHANGELOG.md)
+### 🚀 Coming Soon
+- [ ] Test suite with 90%+ coverage
+- [ ] Plugin system for custom extensions
+- [ ] Cloud sync for settings
+- [ ] GUI version for non-technical users
+- [ ] API for programmatic usage
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for developers collaborating with AI assistants**
+**Made with ❤️ by developers, for developers collaborating with AI**
 
 [⭐ Star this project](https://github.com/AliSaadat-ir/interactive-project-tool) • [🐛 Report Bug](https://github.com/AliSaadat-ir/interactive-project-tool/issues) • [💡 Request Feature](https://github.com/AliSaadat-ir/interactive-project-tool/issues)
 

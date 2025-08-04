@@ -1,0 +1,18 @@
+{
+  "defaultTranslationApi": "openai",
+  "autoOpenReports": true,
+  "autoOpenFolder": false,
+  "openFolderInsteadOfFile": true,
+  "preferredIde": "auto",
+  "preferredFileManager": "auto",
+  "showHiddenFiles": false,
+  "excludePatterns": [],
+  "customExportPath": "",
+  "exportFilePrefix": "export",
+  "maxExportFiles": 50,
+  "confirmBeforeDelete": true,
+  "translationReportFormat": "both",
+  "autoBackupBeforeSync": true,
+  "showDetailedLogs": false,
+  "firstRun": false
+}
