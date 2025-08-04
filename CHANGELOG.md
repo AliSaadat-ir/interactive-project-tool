@@ -2,6 +2,40 @@
 
 All notable changes to the Interactive Project Tool will be documented in this file.
 
+## [4.2.0] - 2025-08-04
+
+### Fixed
+- **Critical Export Workflow Fix**: Fixed hanging issue where export menu would not return to main menu after API setup
+- **Navigation Flow**: Proper return to main menu from all sub-operations
+- **API Status Checking**: Now properly checks API keys availability on every startup
+- **Settings Persistence**: Settings are now correctly saved and loaded between sessions
+
+### Added
+- **Comprehensive Settings Menu**: Complete settings management with detailed descriptions
+  - Translation API preferences with real-time status
+  - Report opening preferences (auto-open in IDE)
+  - IDE/editor selection and auto-detection
+  - Reset to defaults option
+- **First-Run Setup Wizard**: Guided setup for new users with API configuration
+- **Auto-Open Reports**: Generated reports automatically open in preferred IDE or text editor
+  - Supports VS Code, Sublime Text, Atom, and system default editors
+  - Fallback to system text editor if IDE not available
+- **Enhanced Menu Details**: Each settings option shows detailed description that updates with arrow navigation
+- **Settings File Management**: Persistent settings stored in installation directory
+
+### Changed
+- **Improved UX Flow**: All menus now properly return to parent menu after operations
+- **Better API Management**: Enhanced API selection with user preferences
+- **Enhanced Error Handling**: More robust error handling throughout the application
+- **Consistent Navigation**: Unified navigation patterns across all menu systems
+
+### Technical Improvements
+- Added `loadSettings()` and `saveSettings()` functions
+- Implemented `DetailedSettingsMenu` class with dynamic descriptions
+- Enhanced `TranslationManager` to accept settings and file opening callbacks
+- Improved `TranslationTranslator` with preference-based API selection
+- Added IDE detection and file opening utilities
+
 ## [4.1.0] - 2025-08-04
 
 ### Added

@@ -1,7 +1,7 @@
 {
   "name": "project-tool",
-  "version": "4.1.0",
-  "description": "Interactive project export/import tool with advanced translation management",
+  "version": "4.2.0",
+  "description": "Interactive project export/import tool with advanced translation management and settings",
   "main": "index.js",
   "bin": {
     "project-tool": "./bin/project-tool.js"
@@ -27,7 +27,10 @@
     "claude-ai",
     "tree-structure",
     "arrow-keys",
-    "interactive-cli"
+    "interactive-cli",
+    "settings",
+    "workflow",
+    "ide-integration"
   ],
   "author": "Ali Saadat",
   "license": "MIT",
@@ -46,4 +49,3 @@
   "devDependencies": {},
   "preferGlobal": true
 }
-

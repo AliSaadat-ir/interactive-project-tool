@@ -10,6 +10,7 @@ const os = require('os');
 // Get installation directory for .env file
 const INSTALL_DIR = path.dirname(require.main.filename);
 const ENV_PATH = path.join(INSTALL_DIR, '.env');
+const SETTINGS_PATH = path.join(INSTALL_DIR, 'settings.json');
 
 // Load environment from installation directory
 function loadEnvFromInstallDir() {
@@ -45,6 +46,38 @@ function loadEnvFromInstallDir() {
   return env;
 }
 
+// Load settings from installation directory
+function loadSettings() {
+  const defaultSettings = {
+    defaultTranslationApi: 'auto',
+    autoOpenReports: true,
+    firstRun: true,
+    preferredIde: 'auto'
+  };
+  
+  if (fs.existsSync(SETTINGS_PATH)) {
+    try {
+      const content = fs.readFileSync(SETTINGS_PATH, 'utf8');
+      return { ...defaultSettings, ...JSON.parse(content) };
+    } catch (error) {
+      console.error(`Error reading settings: ${error.message}`);
+    }
+  }
+  
+  return defaultSettings;
+}
+
+// Save settings to installation directory
+function saveSettings(settings) {
+  try {
+    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2), 'utf8');
+    return true;
+  } catch (error) {
+    console.error(`Error saving settings: ${error.message}`);
+    return false;
+  }
+}
+
 // Initialize modules
 const TranslationManager = require('./lib/translation/manager');
 const { exportProject } = require('./lib/export-import/exporter');
@@ -69,6 +102,23 @@ async function askConfirmMenu(question, defaultYes = true) {
   return result.value;
 }
 
+// Check API keys status
+function checkApiKeysStatus(env) {
+  const hasOpenAI = !!(env.OPENAI_API_KEY);
+  const hasGoogle = !!(env.GOOGLE_TRANSLATE_API_KEY);
+  
+  return {
+    hasOpenAI,
+    hasGoogle,
+    hasAnyKey: hasOpenAI || hasGoogle,
+    availableApis: {
+      openai: hasOpenAI,
+      google: hasGoogle,
+      mymemory: true // Always available
+    }
+  };
+}
+
 // Setup API keys in installation directory
 async function setupApiKeys() {
   printHeader();
@@ -83,7 +133,7 @@ async function setupApiKeys() {
     if (!overwrite) {
       print('\n⚠️  Setup cancelled', 'yellow');
       await new Promise(resolve => setTimeout(resolve, 1500));
-      return;
+      return false; // Return false to indicate no changes
     }
   }
   
@@ -127,21 +177,325 @@ async function setupApiKeys() {
   }
   
   await new Promise(resolve => setTimeout(resolve, 2000));
+  return true; // Return true to indicate changes were made
+}
+
+// Open file with appropriate application
+async function openFileWithIDE(filePath, settings) {
+  const { exec } = require('child_process');
+  
+  // Try to open with preferred IDE first
+  const openCommands = [];
+  
+  if (settings.preferredIde !== 'auto') {
+    openCommands.push(settings.preferredIde);
+  }
+  
+  // Add common IDEs and editors
+  if (process.platform === 'win32') {
+    openCommands.push(
+      'code',     // VS Code
+      'notepad++', // Notepad++
+      'notepad'   // Windows Notepad
+    );
+  } else if (process.platform === 'darwin') {
+    openCommands.push(
+      'code',     // VS Code
+      'subl',     // Sublime Text
+      'atom',     // Atom
+      'nano',     // Nano
+      'open'      // Default macOS opener
+    );
+  } else {
+    openCommands.push(
+      'code',     // VS Code
+      'subl',     // Sublime Text
+      'gedit',    // GNOME Text Editor
+      'nano',     // Nano
+      'xdg-open'  // Default Linux opener
+    );
+  }
+  
+  // Try each command
+  for (const command of openCommands) {
+    try {
+      if (command === 'open' || command === 'xdg-open') {
+        exec(`${command} "${filePath}"`);
+      } else {
+        exec(`${command} "${filePath}"`);
+      }
+      print(`📖 Opening file with ${command}...`, 'green');
+      return true;
+    } catch (error) {
+      // Continue to next command
+    }
+  }
+  
+  print(`⚠️  Could not open file automatically. File location: ${filePath}`, 'yellow');
+  return false;
+}
+
+// Settings menu with details
+async function showSettingsMenu() {
+  const settings = loadSettings();
+  const env = loadEnvFromInstallDir();
+  const apiStatus = checkApiKeysStatus(env);
+  
+  while (true) {
+    printHeader();
+    print('⚙️  SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      { name: '🌐 Translation API Settings', value: 'api_settings', 
+        detail: `Current: ${settings.defaultTranslationApi}\nChoose default API for translations` },
+      { name: '🔑 API Keys Management', value: 'api_keys',
+        detail: `OpenAI: ${apiStatus.hasOpenAI ? '✅ Configured' : '❌ Not set'}\nGoogle: ${apiStatus.hasGoogle ? '✅ Configured' : '❌ Not set'}` },
+      { name: '📖 Report Opening Settings', value: 'report_settings',
+        detail: `Auto-open: ${settings.autoOpenReports ? 'Enabled' : 'Disabled'}\nPreferred IDE: ${settings.preferredIde}` },
+      { name: '🔄 Reset to Defaults', value: 'reset',
+        detail: 'Reset all settings to default values\nThis will not affect your API keys' },
+      { name: '↩️  Back to Main Menu', value: 'back',
+        detail: 'Return to the main menu' }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Select a setting to configure:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'api_settings':
+        await configureApiSettings(settings);
+        break;
+      case 'api_keys':
+        const updated = await setupApiKeys();
+        if (updated) {
+          // Reload environment after API key update
+          Object.assign(env, loadEnvFromInstallDir());
+        }
+        break;
+      case 'report_settings':
+        await configureReportSettings(settings);
+        break;
+      case 'reset':
+        await resetSettings();
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
+// Detailed settings menu class
+class DetailedSettingsMenu extends SimpleMenu {
+  constructor(title, options) {
+    super(title, options);
+    this.selectedIndex = 0;
+  }
+
+  render() {
+    clearScreen();
+    print(this.title, 'yellow');
+    console.log();
+    
+    this.options.forEach((option, index) => {
+      if (index === this.selectedIndex) {
+        print(`  ▶ ${index + 1}. ${option.name}`, 'green');
+      } else {
+        print(`    ${index + 1}. ${option.name}`, 'white');
+      }
+    });
+
+    // Show details for selected option
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.detail) {
+      console.log();
+      print('───────────────────────────────────────', 'dim');
+      print('📋 Details:', 'cyan');
+      const details = selectedOption.detail.split('\n');
+      details.forEach(detail => {
+        print(`   ${detail}`, 'dim');
+      });
+      print('───────────────────────────────────────', 'dim');
+    }
+
+    console.log();
+    print('Use ↑↓ arrows or number keys to select, Enter to confirm', 'dim');
+    print('Press Ctrl+C to exit', 'dim');
+  }
+}
+
+// Configure API settings
+async function configureApiSettings(settings) {
+  const env = loadEnvFromInstallDir();
+  const apiStatus = checkApiKeysStatus(env);
+  
+  printHeader();
+  print('🌐 TRANSLATION API SETTINGS', 'yellow');
+  console.log();
+  
+  const apiOptions = [
+    { name: 'Auto (Best Available)', value: 'auto',
+      detail: 'Automatically choose the best available API\nPriority: OpenAI > Google > MyMemory' },
+    { name: apiStatus.hasOpenAI ? 'OpenAI GPT-3.5 ✅' : 'OpenAI GPT-3.5 (Not configured)', 
+      value: 'openai',
+      detail: 'High-quality translations with context awareness\nRequires API key from OpenAI' },
+    { name: apiStatus.hasGoogle ? 'Google Translate ✅' : 'Google Translate (Not configured)', 
+      value: 'google',
+      detail: 'Professional translation service\nRequires API key from Google Cloud' },
+    { name: 'MyMemory (Free)', value: 'mymemory',
+      detail: 'Free translation service with rate limits\nNo API key required, basic quality' }
+  ];
+  
+  const menu = new DetailedSettingsMenu(
+    'Choose default translation API:',
+    apiOptions
+  );
+  
+  const selected = await menu.show();
+  
+  settings.defaultTranslationApi = selected.value;
+  saveSettings(settings);
+  
+  print(`\n✅ Default API set to: ${selected.name}`, 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure report settings
+async function configureReportSettings(settings) {
+  printHeader();
+  print('📖 REPORT OPENING SETTINGS', 'yellow');
+  console.log();
+  
+  // Auto-open setting
+  const autoOpenMenu = new SimpleMenu(
+    'Auto-open reports after generation?',
+    [
+      { name: 'Yes, always open reports automatically', value: true },
+      { name: 'No, just show file location', value: false }
+    ]
+  );
+  
+  const autoOpen = await autoOpenMenu.show();
+  settings.autoOpenReports = autoOpen.value;
+  
+  // IDE preference
+  printHeader();
+  print('📖 PREFERRED IDE/EDITOR', 'yellow');
+  console.log();
+  
+  const ideOptions = [
+    { name: 'Auto-detect (try common IDEs)', value: 'auto' },
+    { name: 'Visual Studio Code', value: 'code' },
+    { name: 'Sublime Text', value: 'subl' },
+    { name: 'Atom', value: 'atom' },
+    { name: 'System default editor', value: process.platform === 'win32' ? 'notepad' : 
+                                            process.platform === 'darwin' ? 'open' : 'xdg-open' }
+  ];
+  
+  const ideMenu = new SimpleMenu('Choose preferred IDE/editor:', ideOptions);
+  const selectedIde = await ideMenu.show();
+  settings.preferredIde = selectedIde.value;
+  
+  saveSettings(settings);
+  
+  print('\n✅ Report settings updated!', 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Reset settings
+async function resetSettings() {
+  printHeader();
+  print('🔄 RESET SETTINGS', 'yellow');
+  console.log();
+  
+  const confirm = await askConfirmMenu(
+    'Reset all settings to default values?\n(This will not affect your API keys)',
+    false
+  );
+  
+  if (confirm) {
+    const defaultSettings = {
+      defaultTranslationApi: 'auto',
+      autoOpenReports: true,
+      firstRun: false,
+      preferredIde: 'auto'
+    };
+    
+    saveSettings(defaultSettings);
+    print('\n✅ Settings reset to defaults!', 'green');
+  } else {
+    print('\n❌ Reset cancelled', 'yellow');
+  }
+  
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// First run setup
+async function firstRunSetup() {
+  const settings = loadSettings();
+  
+  if (!settings.firstRun) {
+    return settings;
+  }
+  
+  printHeader();
+  print('🎉 Welcome to Project Tool!', 'green');
+  print('This is your first time using the tool. Let\'s get you set up!', 'dim');
+  console.log();
+  
+  // API Setup
+  const setupKeys = await askConfirmMenu('Would you like to setup API keys for better translation quality?');
+  
+  if (setupKeys) {
+    await setupApiKeys();
+  }
+  
+  // API Selection
+  printHeader();
+  print('🌐 Choose your preferred translation API:', 'cyan');
+  console.log();
+  
+  const env = loadEnvFromInstallDir();
+  const apiStatus = checkApiKeysStatus(env);
+  
+  const apiOptions = [
+    { name: 'Auto (Recommended)', value: 'auto' },
+    { name: apiStatus.hasOpenAI ? 'OpenAI GPT-3.5' : 'OpenAI GPT-3.5 (Not configured)', value: 'openai' },
+    { name: 'MyMemory (Free)', value: 'mymemory' }
+  ];
+  
+  const apiMenu = new SimpleMenu('Select default translation API:', apiOptions);
+  const selectedApi = await apiMenu.show();
+  
+  settings.defaultTranslationApi = selectedApi.value;
+  settings.firstRun = false;
+  saveSettings(settings);
+  
+  print('\n✅ Setup complete! You can change these settings anytime from the main menu.', 'green');
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  return settings;
 }
 
 // Enhanced main menu with better UX
 async function mainMenu() {
-  // Load environment from installation directory
-  const env = loadEnvFromInstallDir();
+  // Load environment and settings
+  let env = loadEnvFromInstallDir();
+  let settings = await firstRunSetup();
   
-  // Check if API keys are configured
-  const hasApiKeys = !!(env.OPENAI_API_KEY || env.GOOGLE_TRANSLATE_API_KEY);
+  // Check API keys status
+  const apiStatus = checkApiKeysStatus(env);
   
   while (true) {
     printHeader();
     
-    if (!hasApiKeys) {
-      print('💡 Tip: Setup API keys for better translation quality', 'yellow');
+    // Show API status tip
+    if (!apiStatus.hasAnyKey) {
+      print('💡 Tip: Setup API keys in Settings for better translation quality', 'yellow');
       console.log();
     }
     
@@ -153,7 +507,7 @@ async function mainMenu() {
         { name: '🌳 Create Structure from Tree Diagram', value: 'tree' },
         { name: '🗑️  Manage Export Files', value: 'manage_exports' },
         { name: '🌐 Manage Translations (Advanced)', value: 'translations' },
-        { name: hasApiKeys ? '🔑 Update API Keys' : '🔑 Setup API Keys (Recommended)', value: 'setup_api' },
+        { name: '⚙️  Settings', value: 'settings' },
         { name: '❌ Exit', value: 'exit' }
       ]
     );
@@ -178,14 +532,18 @@ async function mainMenu() {
         break;
         
       case 'translations':
-        const translationManager = new TranslationManager(env);
+        // Reload environment and settings before translation management
+        env = loadEnvFromInstallDir();
+        settings = loadSettings();
+        const translationManager = new TranslationManager(env, settings, openFileWithIDE);
         await translationManager.manage();
         break;
         
-      case 'setup_api':
-        await setupApiKeys();
-        // Reload environment after setup
-        Object.assign(env, loadEnvFromInstallDir());
+      case 'settings':
+        await showSettingsMenu();
+        // Reload environment after settings change
+        env = loadEnvFromInstallDir();
+        settings = loadSettings();
         break;
         
       case 'exit':
@@ -402,7 +760,8 @@ async function main() {
   // Quick commands for translation
   if (args.includes('--sync') || args.includes('--check')) {
     const env = loadEnvFromInstallDir();
-    const translationManager = new TranslationManager(env);
+    const settings = loadSettings();
+    const translationManager = new TranslationManager(env, settings, openFileWithIDE);
     
     if (args.includes('--sync')) {
       await translationManager.quickSync();
@@ -413,23 +772,6 @@ async function main() {
   }
   
   try {
-    // Check for first run
-    if (!fs.existsSync(ENV_PATH)) {
-      printHeader();
-      print('🎉 Welcome to Project Tool!', 'green');
-      print('This seems to be your first time using the tool.', 'dim');
-      console.log();
-      
-      const setupNow = await askConfirmMenu('Would you like to setup API keys for better features?');
-      
-      if (setupNow) {
-        await setupApiKeys();
-      } else {
-        print('\n💡 You can setup API keys later from the main menu', 'dim');
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    }
-    
     await mainMenu();
   } catch (error) {
     print(`\n❌ Critical Error: ${error.message}`, 'red');
@@ -501,4 +843,3 @@ process.on('uncaughtException', (error) => {
 
 // Run the application
 main();
-
