@@ -1,6 +1,6 @@
 {
   "name": "project-tool",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Interactive project export/import tool with advanced translation management and settings",
   "main": "index.js",
   "bin": {

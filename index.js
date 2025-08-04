@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// === PROJECT TOOL v4.1 - ENHANCED VERSION ===
+// === PROJECT TOOL v4.2.1 - ENHANCED VERSION ===
 // Export/Import + Translation Management with Better UX
 
 const fs = require('fs');
@@ -180,54 +180,128 @@ async function setupApiKeys() {
   return true; // Return true to indicate changes were made
 }
 
-// Open file with appropriate application
+// Detect currently running IDEs/editors
+async function detectRunningIDEs() {
+  const { exec } = require('child_process');
+  const runningIDEs = [];
+  
+  return new Promise((resolve) => {
+    let command;
+    
+    if (process.platform === 'win32') {
+      // Windows: Use tasklist to find running processes
+      command = 'tasklist /FO CSV';
+    } else if (process.platform === 'darwin') {
+      // macOS: Use ps to find running processes
+      command = 'ps aux';
+    } else {
+      // Linux: Use ps to find running processes
+      command = 'ps aux';
+    }
+    
+    exec(command, (error, stdout) => {
+      if (error) {
+        resolve(runningIDEs);
+        return;
+      }
+      
+      const output = stdout.toLowerCase();
+      
+      // Check for common IDEs and editors
+      const ideMap = {
+        'code': ['code', 'vscode', 'visual studio code'],
+        'subl': ['subl', 'sublime', 'sublime_text'],
+        'atom': ['atom'],
+        'webstorm': ['webstorm'],
+        'phpstorm': ['phpstorm'],
+        'intellij': ['intellij', 'idea'],
+        'notepad++': ['notepad++', 'notepad++.exe'],
+        'gedit': ['gedit'],
+        'kate': ['kate'],
+        'nano': ['nano'],
+        'vim': ['vim'],
+        'emacs': ['emacs']
+      };
+      
+      // Check which IDEs are running
+      for (const [command, processNames] of Object.entries(ideMap)) {
+        for (const processName of processNames) {
+          if (output.includes(processName)) {
+            if (!runningIDEs.includes(command)) {
+              runningIDEs.push(command);
+            }
+          }
+        }
+      }
+      
+      resolve(runningIDEs);
+    });
+  });
+}
+
+// Open file with appropriate application - Enhanced with running IDE detection
 async function openFileWithIDE(filePath, settings) {
   const { exec } = require('child_process');
   
-  // Try to open with preferred IDE first
+  print('🔍 Detecting running IDEs...', 'dim');
+  
+  // First priority: Detect currently running IDEs
+  const runningIDEs = await detectRunningIDEs();
+  
   const openCommands = [];
   
-  if (settings.preferredIde !== 'auto') {
+  // Add running IDEs first (highest priority)
+  if (runningIDEs.length > 0) {
+    openCommands.push(...runningIDEs);
+    print(`📍 Found running IDE(s): ${runningIDEs.join(', ')}`, 'cyan');
+  }
+  
+  // Second priority: User's preferred IDE (if not already in running IDEs)
+  if (settings.preferredIde !== 'auto' && !runningIDEs.includes(settings.preferredIde)) {
     openCommands.push(settings.preferredIde);
   }
   
-  // Add common IDEs and editors
+  // Third priority: Common IDEs and editors based on platform
+  const commonIDEs = [];
   if (process.platform === 'win32') {
-    openCommands.push(
-      'code',     // VS Code
-      'notepad++', // Notepad++
-      'notepad'   // Windows Notepad
-    );
+    commonIDEs.push('code', 'notepad++', 'notepad');
   } else if (process.platform === 'darwin') {
-    openCommands.push(
-      'code',     // VS Code
-      'subl',     // Sublime Text
-      'atom',     // Atom
-      'nano',     // Nano
-      'open'      // Default macOS opener
-    );
+    commonIDEs.push('code', 'subl', 'atom', 'open');
   } else {
-    openCommands.push(
-      'code',     // VS Code
-      'subl',     // Sublime Text
-      'gedit',    // GNOME Text Editor
-      'nano',     // Nano
-      'xdg-open'  // Default Linux opener
-    );
+    commonIDEs.push('code', 'subl', 'gedit', 'kate', 'xdg-open');
   }
   
-  // Try each command
+  // Add common IDEs that aren't already in the list
+  for (const ide of commonIDEs) {
+    if (!openCommands.includes(ide)) {
+      openCommands.push(ide);
+    }
+  }
+  
+  // Try each command in order
   for (const command of openCommands) {
     try {
-      if (command === 'open' || command === 'xdg-open') {
-        exec(`${command} "${filePath}"`);
-      } else {
-        exec(`${command} "${filePath}"`);
-      }
-      print(`📖 Opening file with ${command}...`, 'green');
+      await new Promise((resolve, reject) => {
+        if (command === 'open' || command === 'xdg-open') {
+          exec(`${command} "${filePath}"`, (error) => {
+            if (error) reject(error);
+            else resolve();
+          });
+        } else {
+          exec(`${command} "${filePath}"`, (error) => {
+            if (error) reject(error);
+            else resolve();
+          });
+        }
+      });
+      
+      const isRunning = runningIDEs.includes(command);
+      const status = isRunning ? '(currently running)' : '(launching)';
+      print(`📖 Opening file with ${command} ${status}`, 'green');
       return true;
     } catch (error) {
       // Continue to next command
+      continue;
     }
   }
   
@@ -748,7 +822,7 @@ async function main() {
   }
   
   if (args.includes('--version') || args.includes('-v')) {
-    console.log('4.1.0');
+    console.log('4.2.1');
     process.exit(0);
   }
   
@@ -787,7 +861,7 @@ async function main() {
 // Show help information
 function showHelp() {
   console.log(`
-Project Tool v4.1 - Enhanced Export/Import & Translation Manager
+Project Tool v4.2.1 - Enhanced Export/Import & Translation Manager
 ================================================================
 
 USAGE:

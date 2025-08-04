@@ -2,6 +2,25 @@
 
 All notable changes to the Interactive Project Tool will be documented in this file.
 
+## [4.2.1] - 2025-08-04
+
+### Enhanced
+- **Smart IDE Detection**: Enhanced IDE detection with priority for currently running editors
+  - Now detects and prioritizes IDEs that are already running
+  - Improved detection accuracy across Windows, macOS, and Linux
+  - Better process name matching for various IDE versions
+  - Shows status whether IDE is "currently running" or "launching"
+- **Better IDE Priority System**: 
+  - 1st Priority: Currently running IDEs (highest priority)
+  - 2nd Priority: User's preferred IDE setting
+  - 3rd Priority: Common platform-specific IDEs
+  - Fallback: System default text editor
+
+### Improved
+- Enhanced IDE process detection for WebStorm, PhpStorm, IntelliJ IDEA
+- Better cross-platform compatibility for IDE detection
+- More informative feedback when opening files in IDEs
+
 ## [4.2.0] - 2025-08-04
 
 ### Fixed
