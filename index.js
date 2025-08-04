@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// === PROJECT TOOL v4.3.0 - ENHANCED VERSION ===
-// Export/Import + Translation Management with Extended Settings
+// === PROJECT TOOL v4.4.0 - FIXED VERSION ===
+// Export/Import + Translation Management with All Fixes
 
 const fs = require('fs');
 const path = require('path');
@@ -61,10 +61,16 @@ function loadSettings() {
     exportFilePrefix: 'export',
     maxExportFiles: 50,
     confirmBeforeDelete: true,
-    translationReportFormat: 'both', // markdown, json, both
+    translationReportFormat: 'both',
     autoBackupBeforeSync: true,
     showDetailedLogs: false,
-    firstRun: true
+    firstRun: true,
+    useProjectToolIgnore: true,
+    openHtmlInBrowser: true,
+    conflictResolutionMode: 'interactive',
+    autoSaveConflicts: true,
+    showProgressBars: true,
+    theme: 'default'
   };
   
   if (fs.existsSync(SETTINGS_PATH)) {
@@ -252,6 +258,11 @@ async function detectRunningIDEs() {
 async function openFileOrFolder(targetPath, settings, isFolder = false) {
   const { exec } = require('child_process');
   
+  // Read settings if not provided
+  if (!settings || typeof settings !== 'object') {
+    settings = loadSettings();
+  }
+  
   // Determine if we should open folder instead of file
   if (!isFolder && settings.openFolderInsteadOfFile) {
     targetPath = path.dirname(targetPath);
@@ -262,9 +273,41 @@ async function openFileOrFolder(targetPath, settings, isFolder = false) {
     // Open folder with file manager
     return openFolderWithExplorer(targetPath, settings);
   } else {
+    // Special handling for HTML files
+    if (targetPath.endsWith('.html') && settings.openHtmlInBrowser) {
+      return openInBrowser(targetPath);
+    }
     // Open file with IDE
     return openFileWithIDE(targetPath, settings);
   }
+}
+
+// Open HTML file in browser
+async function openInBrowser(htmlPath) {
+  const { exec } = require('child_process');
+  
+  print('🌐 Opening in browser...', 'dim');
+  
+  let command;
+  if (process.platform === 'win32') {
+    command = `start "" "${htmlPath}"`;
+  } else if (process.platform === 'darwin') {
+    command = `open "${htmlPath}"`;
+  } else {
+    command = `xdg-open "${htmlPath}" || sensible-browser "${htmlPath}" || firefox "${htmlPath}" || chromium "${htmlPath}"`;
+  }
+  
+  return new Promise((resolve) => {
+    exec(command, (error) => {
+      if (error) {
+        print(`⚠️  Could not open in browser automatically. File: ${htmlPath}`, 'yellow');
+        resolve(false);
+      } else {
+        print(`🌐 Opened in default browser`, 'green');
+        resolve(true);
+      }
+    });
+  });
 }
 
 // Open folder with file explorer
@@ -441,6 +484,11 @@ async function showSettingsMenu() {
         detail: 'Control verbosity and logging levels\nCustomize terminal output preferences'
       },
       { 
+        name: '🛡️ Conflict Resolution Settings', 
+        value: 'conflict_settings',
+        detail: 'Configure how translation conflicts are handled\nSet auto-save and resolution preferences'
+      },
+      { 
         name: '🔄 Reset to Defaults', 
         value: 'reset',
         detail: 'Reset all settings to default values\nThis will not affect your API keys'
@@ -478,6 +526,9 @@ async function showSettingsMenu() {
       case 'display_settings':
         await configureDisplaySettings(settings);
         break;
+      case 'conflict_settings':
+        await configureConflictSettings(settings);
+        break;
       case 'reset':
         await resetSettings();
         break;
@@ -511,6 +562,11 @@ async function configureTranslationSettings(settings) {
         detail: 'Automatically backup translations before synchronization'
       },
       {
+        name: `Open HTML reports in browser: ${settings.openHtmlInBrowser ? 'Enabled' : 'Disabled'}`,
+        value: 'open_html_browser',
+        detail: 'Automatically open HTML reports in default browser'
+      },
+      {
         name: '↩️  Back',
         value: 'back'
       }
@@ -534,6 +590,12 @@ async function configureTranslationSettings(settings) {
         settings.autoBackupBeforeSync = !settings.autoBackupBeforeSync;
         saveSettings(settings);
         print(`\n✅ Auto-backup ${settings.autoBackupBeforeSync ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'open_html_browser':
+        settings.openHtmlInBrowser = !settings.openHtmlInBrowser;
+        saveSettings(settings);
+        print(`\n✅ Open HTML in browser ${settings.openHtmlInBrowser ? 'enabled' : 'disabled'}`, 'green');
         await new Promise(resolve => setTimeout(resolve, 1000));
         break;
       case 'back':
@@ -576,6 +638,11 @@ async function configureFileSettings(settings) {
         detail: 'Show hidden files in file browsers'
       },
       {
+        name: `Use .projecttoolignore: ${settings.useProjectToolIgnore ? 'Enabled' : 'Disabled'}`,
+        value: 'use_projecttoolignore',
+        detail: 'Use .projecttoolignore file for custom ignore patterns'
+      },
+      {
         name: '↩️  Back',
         value: 'back'
       }
@@ -611,6 +678,12 @@ async function configureFileSettings(settings) {
         settings.showHiddenFiles = !settings.showHiddenFiles;
         saveSettings(settings);
         print(`\n✅ Show hidden files ${settings.showHiddenFiles ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'use_projecttoolignore':
+        settings.useProjectToolIgnore = !settings.useProjectToolIgnore;
+        saveSettings(settings);
+        print(`\n✅ Use .projecttoolignore ${settings.useProjectToolIgnore ? 'enabled' : 'disabled'}`, 'green');
         await new Promise(resolve => setTimeout(resolve, 1000));
         break;
       case 'back':
@@ -704,6 +777,16 @@ async function configureDisplaySettings(settings) {
         detail: 'Show verbose output during operations'
       },
       {
+        name: `Show progress bars: ${settings.showProgressBars ? 'Enabled' : 'Disabled'}`,
+        value: 'progress_bars',
+        detail: 'Display progress bars during long operations'
+      },
+      {
+        name: `Terminal theme: ${settings.theme}`,
+        value: 'theme',
+        detail: 'Choose terminal color theme'
+      },
+      {
         name: '↩️  Back',
         value: 'back'
       }
@@ -723,10 +806,111 @@ async function configureDisplaySettings(settings) {
         print(`\n✅ Detailed logs ${settings.showDetailedLogs ? 'enabled' : 'disabled'}`, 'green');
         await new Promise(resolve => setTimeout(resolve, 1000));
         break;
+      case 'progress_bars':
+        settings.showProgressBars = !settings.showProgressBars;
+        saveSettings(settings);
+        print(`\n✅ Progress bars ${settings.showProgressBars ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'theme':
+        await configureTheme(settings);
+        break;
       case 'back':
         return;
     }
   }
+}
+
+// Configure conflict settings
+async function configureConflictSettings(settings) {
+  while (true) {
+    printHeader();
+    print('🛡️ CONFLICT RESOLUTION SETTINGS', 'yellow');
+    console.log();
+    
+    const menuOptions = [
+      {
+        name: `Resolution mode: ${settings.conflictResolutionMode}`,
+        value: 'resolution_mode',
+        detail: 'How conflicts are resolved (interactive/auto/manual)'
+      },
+      {
+        name: `Auto-save conflicts: ${settings.autoSaveConflicts ? 'Enabled' : 'Disabled'}`,
+        value: 'auto_save',
+        detail: 'Automatically save resolved conflicts'
+      },
+      {
+        name: '↩️  Back',
+        value: 'back'
+      }
+    ];
+    
+    const menu = new DetailedSettingsMenu(
+      'Configure conflict resolution:',
+      menuOptions
+    );
+    
+    const choice = await menu.show();
+    
+    switch (choice.value) {
+      case 'resolution_mode':
+        await configureResolutionMode(settings);
+        break;
+      case 'auto_save':
+        settings.autoSaveConflicts = !settings.autoSaveConflicts;
+        saveSettings(settings);
+        print(`\n✅ Auto-save conflicts ${settings.autoSaveConflicts ? 'enabled' : 'disabled'}`, 'green');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        break;
+      case 'back':
+        return;
+    }
+  }
+}
+
+// Configure resolution mode
+async function configureResolutionMode(settings) {
+  printHeader();
+  print('🛡️ CONFLICT RESOLUTION MODE', 'yellow');
+  console.log();
+  
+  const options = [
+    { name: 'Interactive (recommended)', value: 'interactive' },
+    { name: 'Auto (use first found)', value: 'auto' },
+    { name: 'Manual (ask for each)', value: 'manual' }
+  ];
+  
+  const menu = new SimpleMenu('Choose resolution mode:', options);
+  const selected = await menu.show();
+  
+  settings.conflictResolutionMode = selected.value;
+  saveSettings(settings);
+  
+  print(`\n✅ Resolution mode set to: ${selected.name}`, 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
+}
+
+// Configure theme
+async function configureTheme(settings) {
+  printHeader();
+  print('🎨 TERMINAL THEME', 'yellow');
+  console.log();
+  
+  const options = [
+    { name: 'Default', value: 'default' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'Light', value: 'light' },
+    { name: 'Colorful', value: 'colorful' }
+  ];
+  
+  const menu = new SimpleMenu('Choose theme:', options);
+  const selected = await menu.show();
+  
+  settings.theme = selected.value;
+  saveSettings(settings);
+  
+  print(`\n✅ Theme set to: ${selected.name}`, 'green');
+  await new Promise(resolve => setTimeout(resolve, 1500));
 }
 
 // Configure API settings
@@ -880,12 +1064,20 @@ async function configureExportPrefix(settings) {
   console.log();
   
   print(`Current prefix: "${settings.exportFilePrefix}"`, 'cyan');
-  print('Example: export_20250804_1425.txt', 'dim');
+  print('Example: export_20250804_142532.txt', 'dim');
   console.log();
   
   const newPrefix = await askQuestion('Enter new prefix (or press Enter to keep current): ');
   
   if (newPrefix.trim()) {
+    // Validate prefix
+    const invalidChars = /[<>:"\/\\|?*]/g;
+    if (invalidChars.test(newPrefix)) {
+      print('\n❌ Invalid characters in prefix. Please avoid: < > : " / \\ | ? *', 'red');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return;
+    }
+    
     settings.exportFilePrefix = newPrefix.trim();
     saveSettings(settings);
     print(`\n✅ Export prefix set to: "${settings.exportFilePrefix}"`, 'green');
@@ -1060,7 +1252,13 @@ async function resetSettings() {
       translationReportFormat: 'both',
       autoBackupBeforeSync: true,
       showDetailedLogs: false,
-      firstRun: false
+      firstRun: false,
+      useProjectToolIgnore: true,
+      openHtmlInBrowser: true,
+      conflictResolutionMode: 'interactive',
+      autoSaveConflicts: true,
+      showProgressBars: true,
+      theme: 'default'
     };
     
     saveSettings(defaultSettings);
@@ -1179,7 +1377,8 @@ async function mainMenu() {
         
       case 'exit':
         await exitProgram();
-        return;
+        // If user chose not to exit, continue the loop
+        break;
     }
   }
 }
@@ -1337,7 +1536,7 @@ async function createFromTreeEnhanced() {
   await new Promise(resolve => setTimeout(resolve, 2000));
 }
 
-// Fixed exit program
+// FIXED: Exit program function
 async function exitProgram() {
   printHeader();
   print('👋 Thank you for using Project Tool!', 'green');
@@ -1352,7 +1551,9 @@ async function exitProgram() {
     print('Goodbye! 👋', 'yellow');
     process.exit(0);
   }
-  // If not confirmed, return to main menu (function will return naturally)
+  // If not confirmed, return to main menu (no need for else block)
+  print('\n↩️  Returning to main menu...', 'cyan');
+  await new Promise(resolve => setTimeout(resolve, 1000));
 }
 
 // Enhanced main function
@@ -1365,7 +1566,7 @@ async function main() {
   }
   
   if (args.includes('--version') || args.includes('-v')) {
-    console.log('4.3.0');
+    console.log('4.4.0');
     process.exit(0);
   }
   
@@ -1403,8 +1604,8 @@ async function main() {
 // Show help
 function showHelp() {
   console.log(`
-Project Tool v4.3.0 - Enhanced Export/Import & Translation Manager
-================================================================
+Project Tool v4.4.0 - Export/Import & Translation Manager
+=========================================================
 
 USAGE:
   project-tool [options]
