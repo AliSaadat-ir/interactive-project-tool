@@ -463,6 +463,7 @@ FEATURES:
   📥 Import Projects    Restore projects with smart directory selection
   🌳 Tree Creation     Create folder structures from tree diagrams
   🌐 Translations      Full translation synchronization with AI
+  🏗️ Translation Setup  Create i18n structure for new projects
   🔑 API Integration   OpenAI and Google Translate support
 
 INTERACTIVE MODE:
@@ -500,3 +501,4 @@ process.on('uncaughtException', (error) => {
 
 // Run the application
 main();
+

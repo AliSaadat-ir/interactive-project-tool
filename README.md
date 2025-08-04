@@ -1,24 +1,39 @@
-# Interactive Project Tool v4.1
+# 🚀 Interactive Project Tool v4.1
 
-A powerful command-line tool that combines project export/import capabilities with advanced translation management, designed for seamless collaboration with AI assistants like Claude AI.
+A powerful, AI-integrated command-line utility that simplifies project sharing, translation management, and folder structure generation. Designed for seamless collaboration with Claude AI, OpenAI, and modern multilingual teams.
+
+---
+
+## 🧹 Overview
+
+**Interactive Project Tool** allows developers to:
+
+* Export entire codebases as a single file
+* Import or reconstruct them elsewhere
+* Set up or manage multilingual translation files
+* Automatically translate and sync keys using AI
+* Clean up or inspect export files visually
+* Enhance collaboration with AI assistants
+
+---
 
 ## 🎯 Key Features
 
-- 📤 **Export Projects**: Convert your entire project into a single file
-- 📥 **Import Projects**: Restore projects with advanced directory selection
-- 🌳 **Tree Structure Creation**: Create folder/file structures from tree diagrams
-- 🗑️ **Export File Management**: Clean up export files with single/batch deletion
-- 🌐 **Translation Management**: Full synchronization of translation files across languages
-- 🏗️ **Translation Setup**: Create translation structure for projects without i18n
-- 🤖 **AI Integration**: Works perfectly with Claude AI and supports OpenAI API
-- 🔄 **Auto-Translation**: Automatically translate missing keys using AI
-- 📊 **Translation Reports**: Generate detailed translation analysis
-- 🔑 **Built-in API Setup**: Interactive API key configuration
-- ✨ **Enhanced UX**: All confirmations use arrow-key selection for better experience
+* 📄 **Export Projects**: Package your entire project (code + structure) into one file
+* 📅 **Import Projects**: Recreate the original project from exported text files
+* 🌳 **Tree Structure Creation**: Paste folder trees to auto-generate file structures
+* 🗑️ **Export File Manager**: Visually preview, batch delete, or clean up old export files
+* 🌐 **Translation Sync**: Keep multilingual `.ts` files consistent and updated
+* 🏗️ **Auto Translation Setup**: Bootstrap i18n files for projects without translation layers
+* 🔄 **AI-Powered Translations**: Fill missing translations using OpenAI/Claude
+* 📊 **Detailed Translation Reports**: Analyze inconsistencies, gaps, or conflicts
+* 🤖 **Claude AI Compatibility**: Export and format projects to feed Claude with perfect context
+* 🔑 **API Key Management**: Secure and separate key storage for translation APIs
+* ✨ **Intuitive UX**: All operations support arrow key navigation and real-time feedback
 
-## 🚀 Quick Start
+---
 
-### Installation
+## ⚡ Installation
 
 ```bash
 # Clone the repository
@@ -32,401 +47,269 @@ npm install -g .
 project-tool
 ```
 
-### First Run Setup
+---
 
-On first run, the tool will prompt you to set up API keys for better translation quality:
-- **OpenAI API Key**: For high-quality translations
-- **Google Translate API Key**: Alternative translation service
-- **Skip**: Use free translation service (limited)
+## 🚦 First Run Setup
 
-## 📖 Usage
+On first launch, you’ll be guided through API setup:
 
-### Basic Commands
+* 🧀 **OpenAI Key** (recommended)
+* 🌍 **Google Translate API** (optional fallback)
+* 🚫 **Skip**: Use limited built-in translation
+
+Your keys are stored safely in the tool’s **installation directory** (`.env`), never inside your project.
+
+---
+
+## 🧪 Basic Commands
 
 ```bash
-# Interactive mode (default)
+# Launch tool interactively
 project-tool
 
-# Show help
-project-tool --help
-
-# Show version
-project-tool --version
-
-# Setup API keys
-project-tool --setup
-
-# Translation commands
-project-tool --sync    # Sync all translation files
-project-tool --check   # Check translation consistency
+# CLI commands
+project-tool --help         # Show help
+project-tool --version      # Show version
+project-tool --setup        # Setup API keys
+project-tool --sync         # Sync translation files
+project-tool --check        # Check translation consistency
 ```
 
-### Export/Import Workflow
+---
 
-#### 1. Export Your Project
+## 📦 Project Export & Import
+
+### 🔐 Export Your Project
+
 ```bash
 project-tool
 > Export Project
-> Navigate to your project folder
-> Choose .gitignore usage
-# Creates: export_[timestamp].txt
+> Select directory
+> Use .gitignore (optional)
+📅 export_20250803_2145.txt created
 ```
 
-#### 2. Import a Project
+### 📅 Import from Export File
+
 ```bash
 project-tool
 > Import Project
-> Select export file
+> Choose export file
 > Choose destination
-> Confirm import
+📅 Project reconstructed
 ```
 
-### Translation Management
+---
 
-#### Full Synchronization
+## 🌍 Translation Management
+
+### 🔄 Full Sync
+
 ```bash
 project-tool
 > Manage Translations
-> Scan Project
 > Full Synchronization
 ```
 
-This will:
-- Scan all components for translation usage
-- Sync all language files to have identical keys
-- Update TypeScript types automatically
-- Translate missing keys using AI
-- Remove unused translations
+* Ensures all language files have the same keys
+* Fills missing values using AI
+* Removes unused or orphaned keys
+* Regenerates `types.ts` for safety
 
-#### Create Translation Structure
-For projects without translation setup:
+### 🏗️ Create Translation Structure (New!)
+
 ```bash
 project-tool
 > Manage Translations
 > Create Translation Structure
-> Select languages with Space key
-> Confirm creation
 ```
 
-This creates:
+Choose languages like:
+
 ```
-lib/translations/
-├── index.ts          # Main export file
-├── types.ts          # TypeScript types
-└── languages/
-    ├── en.ts        # English (required)
-    ├── ar.ts        # Arabic (optional)
-    ├── es.ts        # Spanish (optional)
-    └── ...          # Other selected languages
+[✓] English (en)
+[✓] Arabic (ar)
+[✓] Farsi (fa)
+...
 ```
 
-## 🎮 Enhanced User Experience
+Generates:
 
-### Arrow-Key Selection
-All confirmations now use intuitive arrow-key selection:
 ```
-Would you like to export this directory?
-  ▶ ✓ Yes (default)
-    ✗ No
-```
-
-### Multi-Language Selection
-When creating translation structure:
-```
-Select languages to include (Space to select, Enter to confirm):
-  ▶ [✓] English (en) - Required
-    [✓] Arabic (ar)
-    [ ] Spanish (es)
-    [ ] French (fr)
-    [ ] Persian/Farsi (fa)
+translations/
+├── languages/
+│   ├── en.ts
+│   ├── ar.ts
+│   └── ...
+├── index.ts
+└── types.ts
 ```
 
-### Folder Creation Options
-When creating structures from tree diagrams:
-- 📍 Current directory
-- 🆕 Create in new parent folder
-- 📂 Browse and select directory
-- ❌ Cancel
+---
 
-### Exit Confirmation
-The tool now asks for confirmation before exiting, preventing accidental exits.
+## 🧠 Working with Claude AI
 
-## 🤖 Using with Claude AI
+### Exporting for Claude
 
-### Export Your Project for Claude
+1. Run:
 
-1. Export your project:
 ```bash
 project-tool
 > Export Project
 ```
 
-2. Use this prompt with Claude AI:
+2. Copy the resulting file to Claude AI and use this prompt:
 
-```text
-You are a code-export assistant that produces a single text file summarizing project structure and code contents. 
-Output requirements:
-1. The file must contain multiple sections:
-   - For each included file (extensions: .js, .jsx, .ts, .tsx, .css, .scss, .html, .json, .md, .config.js, .babelrc, and dotfiles), insert:
-     // File: relative/path/to/file
-     (then the entire content of that file)
-   - After listing all files, insert:
-     // === Folder Tree ===
-     Then a tree diagram using ASCII markers: 
-       ├── dir-or-file
-       │   └── nested
-       └── last
-2. Excluded:
-   - Directories: node_modules, .git, dist, build, .next, .vscode, and any directory that contains the script
-   - Files: .gitignore, package-lock.json
-3. Relative paths are from the project root (one level above script location).
-4. The folder tree:
-   - Use ├── for items except the last, └── for the last, indent nested levels with │    or blanks
-5. Output must be plain text in one file, no additional commentary or formatting markers.
-6. Do not mention the prompt itself or metadata; only generate the structured output according to rules.
+> You are a code-export assistant that produces a single text file summarizing project structure and code contents... (full prompt included in original README)
+
+3. After Claude generates your edits:
+
+```bash
+project-tool
+> Import Project
 ```
 
-3. Upload your export file to Claude AI along with the prompt
-4. Get Claude's response and save it as a new file
-5. Import Claude's changes back to your project
+---
 
-### Managing Export Files
-
-Clean up accumulated export files easily:
+## 🗑️ Manage Export Files
 
 ```bash
 project-tool
 > Manage Export Files
 ```
 
-Options:
-- **Delete Single File**: Select and delete one export file with preview
-- **Delete Multiple Files**: Select multiple files with space key
-- **Browse by Folder**: Navigate directories to manage files
-- **Clean All**: Remove all export files from current directory
-
 Features:
-- File preview before deletion
-- Size, date, and time information
-- Multi-select with Space key, A for select all
-- Safety confirmations for batch operations
-- Folder navigation to find export files anywhere
 
-Visual example for batch deletion:
-```
-🗑️  DELETE MULTIPLE EXPORT FILES
+* Preview size, date, and contents
+* Multi-file selection (Space)
+* "A" to select all
+* Directory browsing
+* Safe deletion with confirmation
 
-Select files to delete (Space to select, A for all):
+---
 
-  ▶ [✓] export_20250803_2135.txt (245.3KB) - 08/03/2025 21:35:42
-    [✓] export_20250803_1922.txt (189.7KB) - 08/03/2025 19:22:15
-    [ ] export_20250802_1445.txt (567.2KB) - 08/02/2025 14:45:30
-    [ ] export_20250801_0930.txt (123.4KB) - 08/01/2025 09:30:00
-
-Selected: 2 file(s)
-
-Use ↑↓ arrows to navigate, Space to select/deselect
-Press A to select/deselect all, Enter to confirm
-Press Ctrl+C to cancel
-```
-
-### Create Structure from Tree
-
-Perfect for quickly setting up project templates:
+## 🌳 Create from Folder Tree
 
 ```bash
 project-tool
 > Create Structure from Tree
-> Paste your tree:
+> Paste structure like:
 my-app
-├── src/
-│   ├── components/
-│   │   └── Button.jsx
-│   └── index.js
-└── package.json
-DONE
+├️── src/
+│   └️── index.ts
+└️── package.json
 ```
 
-When selecting "Create in new parent folder":
-- Default name suggested: `[root-folder]_workspace`
-- Example: For tree with root "my-app", suggests "my-app_workspace"
-- Can be customized or use default by pressing Enter
+You can create inside:
 
-## 🌐 Translation Features
+* 📍 Current directory
+* 📁 New workspace folder
+* 🔍 Selectable custom path
 
-### Supported Patterns
-The tool detects various translation patterns:
-- `t.someKey`
-- `t['someKey']`
-- `{t.someKey || 'Fallback'}`
-- `$t.someKey` (Vue style)
-- `translation('someKey')`
+---
 
-### Quote Normalization
-The tool now properly handles different quote styles:
-- `"Just Browsing"` and `'Just Browsing'` are treated as the same
-- Smart conflict detection prevents false duplicates
-- Preserves original quote style in final output
+## 🧐 Smart Fallback Grouping
 
-### Translation Structure
-```
-lib/translations/
-├── index.ts          # Main export with useTranslation hook
-├── types.ts          # TypeScript types
-└── languages/
-    ├── en.ts        # English
-    ├── ar.ts        # Arabic
-    ├── es.ts        # Spanish
-    └── fr.ts        # French
-```
+* Groups similar fallback text (ignores `'` vs `"`)
+* Shows variants in conflict analysis
+* Improves AI auto-translation efficiency
 
-### Auto-Detection
-The tool automatically detects common translation structures:
-- `lib/translations/languages/`
-- `src/translations/languages/`
-- `locales/`
-- `i18n/`
+---
 
-### Creating Translation Structure
-For projects without translations:
-1. Detects translation usage (t.key patterns)
-2. Prompts to create structure
-3. Lets you select languages
-4. Creates all necessary files
-5. Populates with detected keys
+## 📚 Translation Coverage
 
-## ⚙️ Configuration
+### Detected Patterns:
 
-### Environment Variables
-The tool stores API keys in the installation directory to avoid conflicts with project .env files:
-```
-<installation-dir>/.env
-```
+* `t.key`
+* `t['key']`
+* `$t.key`
+* `{t.key || 'Fallback'}`
+* `translation('key')`
 
-### File Types Included
-- JavaScript: `.js`, `.jsx`, `.mjs`
-- TypeScript: `.ts`, `.tsx`
-- Styles: `.css`, `.scss`, `.sass`, `.less`
-- Markup: `.html`, `.xml`
-- Config: `.json`, `.yml`, `.yaml`
-- Documentation: `.md`, `.txt`
-- Dotfiles: `.env`, `.babelrc`, `.eslintrc`
+### Supported Languages (v4.1+)
 
-### Automatic Exclusions
-- `node_modules/`
-- `.git/`
-- `dist/`, `build/`, `.next/`
-- `package-lock.json`, `yarn.lock`
-- Binary files
+| Code | Language      | Code | Language |
+| ---- | ------------- | ---- | -------- |
+| en   | English       | fr   | French   |
+| ar   | Arabic        | de   | German   |
+| fa   | Persian/Farsi | ru   | Russian  |
+| hi   | Hindi         | ja   | Japanese |
+| zh   | Chinese       | ur   | Urdu     |
+| es   | Spanish       | it   | Italian  |
+| pt   | Portuguese    | ko   | Korean   |
 
-## 🛠️ Advanced Features
+---
 
-### API Key Management
+## ⚙️ Configuration & Structure
+
+* Stores API keys in:
+
+  ```
+  <installation-path>/.env
+  ```
+
+* Included file types:
+
+  * Code: `.js`, `.ts`, `.jsx`, `.tsx`
+  * Style: `.css`, `.scss`, `.sass`, `.less`
+  * Config: `.json`, `.yaml`, `.yml`
+  * Docs: `.md`, `.txt`
+  * Dotfiles: `.env`, `.babelrc`, `.eslintrc`
+
+* Exclusions:
+
+  * `node_modules/`, `.git/`, `.vscode/`
+  * `dist/`, `.next/`, `build/`
+  * Binary or lock files
+
+---
+
+## 🧪 Example Workflows
+
+### ➔ Full Export & AI Feedback Cycle
+
 ```bash
-# Setup API keys interactively
-project-tool --setup
-
-# Keys are stored in installation directory
-# No conflicts with project .env files
-```
-
-### Translation Sync Options
-- **Scan Project**: Detect all translation usage
-- **Full Sync**: Complete synchronization of all files
-- **Add Missing**: Only add missing translations
-- **Remove Unused**: Clean up unused keys
-- **Generate Report**: Create detailed analysis
-
-### .gitignore Support
-When exporting, you can choose to use .gitignore patterns for filtering sensitive files.
-
-## 📊 Example Workflows
-
-### Complete Project Export/Import
-```bash
-# Export
 project-tool
 > Export Project
-> Select: my-react-app/
-> Use .gitignore: ✓ Yes (default)
-✅ Exported 156 files (2.4MB)
 
-# Share with AI or team
-# Import response
-project-tool  
-> Import Project
-> Select: response.txt
-> Create new folder: my-app-updated
-✅ Imported 156 files
-```
+# Copy to Claude or OpenAI
+# Get feedback file
 
-### Translation Management
-```bash
-# Check status
-project-tool --check
-
-# Full sync
-project-tool --sync
-
-# Interactive management
 project-tool
-> Manage Translations
-> Scan Project
-> Full Synchronization
-✅ All languages synchronized
+> Import Project
 ```
 
-### Setting Up Translations
+### 🌐 Set Up Translations from Scratch
+
 ```bash
-# For new projects
 project-tool
 > Manage Translations
 > Create Translation Structure
-> Select languages (Space to toggle)
-> ✓ English (required)
-> ✓ Arabic
-> ✓ Spanish
-> Create
-✅ Translation structure created
 ```
 
-## 🔧 Troubleshooting
+Then:
 
-### Common Issues
-
-**"Command not found"**
 ```bash
-npm install -g .
-# Or use npx
-npx project-tool
+project-tool --sync
 ```
 
-**API Key Issues**
-```bash
-project-tool --setup
-# Keys are stored in installation directory
-```
+---
 
-**Large Projects**
-- Use .gitignore filtering
-- Exclude unnecessary directories
-- Split into smaller exports if needed
+## 🧰 Troubleshooting
 
-**Module Not Found Error**
-If you see `Cannot find module './lib/utils/treeParser'`:
-- Ensure all files are properly installed
-- Reinstall the tool: `npm install -g .`
+| Problem                  | Solution                            |
+| ------------------------ | ----------------------------------- |
+| `command not found`      | Run `npm install -g .` or use `npx` |
+| API key not working      | Run `project-tool --setup`          |
+| Missing module on import | Reinstall: `npm install -g .`       |
+| Large export file        | Use `.gitignore` and export filter  |
 
-**Translation Conflicts**
-- The tool now properly handles different quote styles
-- False duplicates are automatically resolved
-- Manual resolution available for true conflicts
+---
 
-## 🤝 Contributing
+## 🡩‍💼 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Pull requests are welcome. For major changes, please open an issue first.
 
-### Development Setup
 ```bash
 git clone https://github.com/AliSaadat-ir/interactive-project-tool.git
 cd interactive-project-tool
@@ -434,79 +317,21 @@ npm install
 node index.js
 ```
 
-## 📄 License
+---
 
-MIT License - see [LICENSE](LICENSE) file for details.
+## 📜 License
 
-## 🆕 What's New in v4.1
-
-### Major Features
-- **Translation Structure Creation**: Create i18n setup for projects without translations
-- **Multi-Language Selection**: Interactive language selection with Space key
-- **Quote Normalization**: Properly handles different quote styles in translation detection
-- **Time Display**: Shows time alongside date in file listings
-
-### Major Improvements
-- **Export File Management**: Clean up export files with single/batch deletion
-- **Enhanced UX**: All confirmations now use arrow-key selection instead of Y/n prompts
-- **Better Tree Creation**: Added folder selection options similar to import feature
-- **No More Conflicts**: .env file moved to installation directory
-- **Exit Confirmation**: Prevents accidental exits with confirmation dialog
-- **Auto-Open Folders**: Option to open created/imported folders automatically
-- **First-Run Experience**: Welcome message with option to setup API keys
-
-### Export File Management
-- Single file deletion with preview
-- Multi-select batch deletion (Space to select, A for all)
-- Browse folders to find and manage export files
-- Clean all option with double confirmation
-- Shows file size, date, and time
-
-### Bug Fixes
-- Fixed quote normalization in fallback text detection
-- Fixed time display in file listings
-- Fixed `Cannot find module './lib/utils/treeParser'` error
-- Fixed .env conflicts with user projects
-- Fixed unclear confirmation prompts
-- Fixed missing folder creation options
-- Fixed Windows 11 folder/file opening
-- Fixed export filename format
-
-## 🚀 Git Push Commands for v4.1
-
-```bash
-# Stage all changes
-git add .
-
-# Commit with version bump
-git commit -m "feat: Release v4.1 - Translation structure creation and quote normalization
-
-- Add translation structure creation for projects without i18n setup
-- Implement multi-language selection with Space key
-- Fix quote normalization in fallback text detection
-- Add time display alongside date in file listings
-- Update README and CHANGELOG for v4.1"
-
-# Tag the release
-git tag -a v4.1.0 -m "Version 4.1.0 - Translation structure creation and enhanced features"
-
-# Push to GitHub
-git push origin main
-git push origin v4.1.0
-
-# Create GitHub release
-# Go to: https://github.com/AliSaadat-ir/interactive-project-tool/releases/new
-# Select tag: v4.1.0
-# Title: v4.1.0 - Translation Structure Creation
-# Copy release notes from CHANGELOG.md
-```
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/AliSaadat-ir/interactive-project-tool/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/AliSaadat-ir/interactive-project-tool/discussions)
-- **Repository**: [https://github.com/AliSaadat-ir/interactive-project-tool](https://github.com/AliSaadat-ir/interactive-project-tool)
+Licensed under the MIT License.
+See [LICENSE](LICENSE) for full details.
 
 ---
 
-Made with ❤️ for developers using AI assistants
+## 📣 Stay Connected
+
+* 🥾 [Issues](https://github.com/AliSaadat-ir/interactive-project-tool/issues)
+* 💬 [Discussions](https://github.com/AliSaadat-ir/interactive-project-tool/discussions)
+* 🌐 [GitHub Repository](https://github.com/AliSaadat-ir/interactive-project-tool)
+
+---
+
+Made with ❤️ for developers who use AI to build smarter, faster, and better.
